@@ -3,9 +3,9 @@ import Notification from '@/components/ui/Notification'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { toggleDeleteConfirmation } from '@/store/slices/app'
-import { CampaignsDelete } from "@/services/CampiagnsService";
+import { PublisherDelete } from '@/services/PublishersService'
 
-const CampaignDeleteConfirmation = ({
+const PublisherDeleteConfirmation = ({
     onSuccess,
 }: {
     onSuccess: () => void
@@ -21,7 +21,7 @@ const CampaignDeleteConfirmation = ({
 
     const onDelete = async () => {
         dispatch(toggleDeleteConfirmation(false))
-        const success = await CampaignsDelete(selectedId as string)
+        const success = await PublisherDelete(selectedId as string)
 
         if (success.data.result) {
             onSuccess()
@@ -31,7 +31,7 @@ const CampaignDeleteConfirmation = ({
                     type="success"
                     duration={2500}
                 >
-                    کمپین با موفقیت حذف شد.
+                    پخش کننده با موفقیت حذف شد.
                 </Notification>,
                 {
                     placement: 'top-end',
@@ -44,7 +44,7 @@ const CampaignDeleteConfirmation = ({
         <ConfirmDialog
             isOpen={dialogOpen}
             type="danger"
-            title="حذف کمپین"
+            title="حذف پخش کننده"
             confirmButtonColor="red-600"
             confirmText={'تایید'}
             cancelText={'لفو'}
@@ -53,9 +53,9 @@ const CampaignDeleteConfirmation = ({
             onCancel={onDialogClose}
             onConfirm={onDelete}
         >
-            <p>آیا از حدف کمپین اطمینان دارید؟ این عمل قابل برگشت نیست.</p>
+            <p>آیا از حدف پخش کننده اطمینان دارید؟ این عمل قابل برگشت نیست.</p>
         </ConfirmDialog>
     )
 }
 
-export default CampaignDeleteConfirmation
+export default PublisherDeleteConfirmation

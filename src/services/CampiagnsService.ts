@@ -39,7 +39,7 @@ interface CampaignsDeleteResponse {
 }
 
 export async function CampaignsDelete(id: string) {
-    return ApiService.fetchData<CampaignsListResponse>({
+    return ApiService.fetchData<CampaignsDeleteResponse>({
         url: `/campaigns/${id}`,
         method: 'delete',
     })
@@ -69,6 +69,14 @@ export async function ApiCreateCampaign(data: CreateCampaignRequest) {
     return ApiService.fetchData<CreateCampaignResponse>({
         url: '/campaigns',
         method: 'post',
+        data,
+    })
+}
+
+export async function ApiEditCampaign(id: string, data: CreateCampaignRequest) {
+    return ApiService.fetchData<CreateCampaignResponse>({
+        url: `/campaigns/${id}`,
+        method: 'put',
         data,
     })
 }

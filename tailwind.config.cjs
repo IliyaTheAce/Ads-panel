@@ -15,6 +15,7 @@ module.exports = {
 	darkMode: 'class',
 		theme: {
 			fontFamily: {
+				IranSans:"IranSans",
 				sans: [
 					'Inter',
 					'ui-sans-serif',

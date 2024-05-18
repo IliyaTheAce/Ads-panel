@@ -1,30 +1,26 @@
 import { useMemo, useRef } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable, DataTableResetHandle } from '@/components/shared'
-import { HiOutlineEye, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
-import { useAppDispatch } from '@/store'
+import { HiOutlineEye, HiOutlineTrash } from 'react-icons/hi'
+import { toggleViewSideBar, useAppDispatch } from '@/store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { setSelectedId, toggleDeleteConfirmation } from '@/store/slices/app'
-import appConfig from '@/configs/app.config'
-import { ICampaign } from '@/@types/data'
+import { IUser } from '@/@types/data'
 import { useNavigate } from 'react-router-dom'
-import { APP_PREFIX_PATH } from '@/constants/route.constant'
 
-const CampaignsTable = ({
+const UsersTable = ({
     loading,
     data,
-    onRefresh,
 }: {
-    data: ICampaign[]
+    data: IUser[]
     loading: boolean
     onRefresh: () => void
 }) => {
-    const { apiPrefix } = appConfig
     const tableRef = useRef<DataTableResetHandle>(null)
-    const columns = useMemo<ColumnDef<ICampaign>[]>(
+    const columns = useMemo<ColumnDef<IUser>[]>(
         () => [
             {
-                header: '#',
+                header: 'ردیف',
                 accessorKey: 'uid',
                 enableSorting: false,
                 cell: (props) => {
@@ -32,47 +28,34 @@ const CampaignsTable = ({
                 },
             },
             {
-                header: 'عنوان',
-                accessorKey: 'title',
-                enableSorting: false,
-            },
-            {
-                header: 'تاریخ ثبت',
-                accessorKey: 'createdAt',
+                header: 'نام',
+                accessorKey: 'firstname',
                 enableSorting: false,
                 cell: ({ row }) => {
-                    return row.original.createdAt.split(' ')[0]
+                    return row.original.firstname + ' ' + row.original.lastname
                 },
             },
             {
-                header: 'دسته بندی',
-                accessorKey: 'category',
-                enableSorting: false,
-                cell: (props) => {
-                    return props.row.original.category.name
-                },
-            },
-            {
-                header: 'تایپ',
-                accessorKey: 'type',
+                header: 'نام کاربری',
+                accessorKey: 'username',
                 enableSorting: false,
             },
             {
-                header: 'وضعیت',
-                accessorKey: 'is_enabled',
+                header: 'موبایل',
+                accessorKey: 'mobile',
                 enableSorting: false,
-                cell: (props) => {
-                    return props.row.original.is_enabled === 1
-                        ? 'فعال'
-                        : 'غیر فعال'
-                },
             },
             {
-                header: 'تنظیمات',
-                accessorKey: 'id',
+                header: 'ایمیل',
+                accessorKey: 'email',
                 enableSorting: false,
-                cell: (props) => <ActionColumn row={props.row.original} />,
             },
+            // {
+            //     header: 'تنظیمات',
+            //     accessorKey: 'id',
+            //     enableSorting: false,
+            //     cell: (props) => <ActionColumn row={props.row.original} />,
+            // },
         ],
         []
     )
@@ -92,18 +75,14 @@ const CampaignsTable = ({
     )
 }
 
-const ActionColumn = ({ row }: { row: ICampaign }) => {
+const ActionColumn = ({ row }: { row: IUser }) => {
     const dispatch = useAppDispatch()
-    const nav = useNavigate()
     const { textTheme } = useThemeClass()
-
+    const nav = useNavigate()
     const OnShow = () => {
-        nav(`${APP_PREFIX_PATH}/campaigns/${row.uid}`)
+        dispatch(setSelectedId(row.uid))
+        dispatch(toggleViewSideBar(true))
     }
-    const onEdit = () => {
-        nav(`${APP_PREFIX_PATH}/campaigns/${row.uid}/edit`)
-    }
-
     const onDelete = () => {
         dispatch(setSelectedId(row.uid))
         dispatch(toggleDeleteConfirmation(true))
@@ -118,12 +97,6 @@ const ActionColumn = ({ row }: { row: ICampaign }) => {
                 <HiOutlineEye />
             </span>
             <span
-                className={`cursor-pointer p-2 hover:${textTheme}`}
-                onClick={onEdit}
-            >
-                <HiOutlinePencil />
-            </span>
-            <span
                 className="cursor-pointer p-2 hover:text-red-500"
                 onClick={onDelete}
             >
@@ -133,4 +106,4 @@ const ActionColumn = ({ row }: { row: ICampaign }) => {
     )
 }
 
-export default CampaignsTable
+export default UsersTable

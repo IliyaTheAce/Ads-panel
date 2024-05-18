@@ -1,13 +1,13 @@
-import { useMemo, lazy, Suspense } from 'react'
+import { lazy, Suspense, useEffect, useMemo } from 'react'
 import Loading from '@/components/shared/Loading'
-import { useAppSelector } from '@/store'
+import { getCommonData, useAppDispatch, useAppSelector } from '@/store'
 import {
+    LAYOUT_TYPE_BLANK,
     LAYOUT_TYPE_CLASSIC,
+    LAYOUT_TYPE_DECKED,
     LAYOUT_TYPE_MODERN,
     LAYOUT_TYPE_SIMPLE,
     LAYOUT_TYPE_STACKED_SIDE,
-    LAYOUT_TYPE_DECKED,
-    LAYOUT_TYPE_BLANK,
 } from '@/constants/theme.constant'
 import useAuth from '@/utils/hooks/useAuth'
 import useDirection from '@/utils/hooks/useDirection'
@@ -30,6 +30,11 @@ const Layout = () => {
     useDirection()
 
     useLocale()
+
+    const dispatch = useAppDispatch()
+    useEffect(() => {
+        dispatch(getCommonData())
+    }, [])
 
     const AppLayout = useMemo(() => {
         if (authenticated) {

@@ -1,5 +1,6 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SLICE_BASE_NAME } from './constants'
+import { GetCommonData } from '@/services/CommonServices'
 
 export type appState = {
     deleteConfirmation: boolean
@@ -7,15 +8,32 @@ export type appState = {
     editSideBarOpen: boolean
     viewSideBarOpen: boolean
     createSideBarOpen: boolean
+    commonData: {
+        categories: {
+            label: string
+            value: number
+        }[]
+    }
 }
 
 const initialState: appState = {
     deleteConfirmation: false,
     editSideBarOpen: false,
-    viewSideBarOpen:false,
+    viewSideBarOpen: false,
     selectedId: undefined,
     createSideBarOpen: false,
+    commonData: {
+        categories: [],
+    },
 }
+
+export const getCommonData = createAsyncThunk(
+    'app/data/getCommonData',
+    async () => {
+        const response = await GetCommonData()
+        return response.data.data
+    }
+)
 
 const appSlice = createSlice({
     name: `${SLICE_BASE_NAME}/app`,
@@ -37,6 +55,21 @@ const appSlice = createSlice({
             state.selectedId = action.payload
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(getCommonData.fulfilled, (state, action) => {
+            const categories: {
+                label: string
+                value: number
+            }[] = []
+            action.payload.categories.map((item) =>
+                categories.push({
+                    label: item.name,
+                    value: item.id,
+                })
+            )
+            state.commonData = { categories }
+        })
+    },
 })
 
 export const {
@@ -44,6 +77,6 @@ export const {
     toggleDeleteConfirmation,
     setSelectedId,
     toggleEditSideBar,
-    toggleViewSideBar
+    toggleViewSideBar,
 } = appSlice.actions
 export default appSlice.reducer

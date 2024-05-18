@@ -1,21 +1,13 @@
+import { Field, Form, Formik } from 'formik'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
-import Alert from '@/components/ui/Alert'
-import PasswordInput from '@/components/shared/PasswordInput'
-import ActionLink from '@/components/shared/ActionLink'
-import useTimeOutMessage from '@/utils/hooks/useTimeOutMessage'
-import { Field, Form, Formik } from 'formik'
 import * as Yup from 'yup'
-import useAuth from '@/utils/hooks/useAuth'
-import type { CommonProps } from '@/@types/common'
+import { AdaptableCard } from '@/components/shared'
 import { useNavigate } from 'react-router-dom'
-import { AUTH_PREFIX_PATH } from '@/constants/route.constant'
-
-interface SignUpFormProps extends CommonProps {
-    disableSubmit?: boolean
-    signInUrl?: string
-}
+import PasswordInput from '../../components/shared/PasswordInput'
+import { APP_PREFIX_PATH } from '@/constants/route.constant'
+import useAuth from '@/utils/hooks/useAuth'
 
 type SignUpFormSchema = {
     firstname: string
@@ -54,12 +46,10 @@ const initialValues: SignUpFormSchema = {
     username: '',
     mobile: '',
 }
-const SignUpForm = (props: SignUpFormProps) => {
-    const { disableSubmit = false, className, signInUrl = '/sign-in' } = props
+
+export default function UserCreate() {
     const nav = useNavigate()
     const { signUp } = useAuth()
-
-    const [message, setMessage] = useTimeOutMessage()
 
     const onSignUp = async (
         values: SignUpFormSchema,
@@ -70,28 +60,19 @@ const SignUpForm = (props: SignUpFormProps) => {
         const result = await signUp(values)
 
         if (result?.result) {
-            nav(`${AUTH_PREFIX_PATH}/sign-in`)
+            nav(`${APP_PREFIX_PATH}/users`)
         }
 
         setSubmitting(false)
     }
 
     return (
-        <div className={className}>
-            {message && (
-                <Alert showIcon className="mb-4" type="danger">
-                    {message}
-                </Alert>
-            )}
+        <AdaptableCard className="h-full" bodyClass="h-full">
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={(values, { setSubmitting }) => {
-                    if (!disableSubmit) {
-                        onSignUp(values, setSubmitting)
-                    } else {
-                        setSubmitting(false)
-                    }
+                    onSignUp(values, setSubmitting)
                 }}
             >
                 {({ touched, errors, isSubmitting }) => (
@@ -199,18 +180,10 @@ const SignUpForm = (props: SignUpFormProps) => {
                                     ? 'در حال ساخت حساب ...'
                                     : 'ثبت نام'}
                             </Button>
-                            <div className="mt-4 text-center">
-                                <span>حساب کاربری دارید؟ </span>
-                                <ActionLink to={signInUrl}>
-                                    ورود به سامانه
-                                </ActionLink>
-                            </div>
                         </FormContainer>
                     </Form>
                 )}
             </Formik>
-        </div>
+        </AdaptableCard>
     )
 }
-
-export default SignUpForm

@@ -1,10 +1,10 @@
 import ApiService from './ApiService'
 import type {
-    SignInCredential,
-    SignUpCredential,
     ForgotPassword,
     ResetPassword,
+    SignInCredential,
     SignInResponse,
+    SignUpCredential,
     SignUpResponse,
 } from '@/@types/auth'
 
@@ -18,17 +18,14 @@ export async function apiSignIn(data: SignInCredential) {
 
 export async function apiSignUp(data: SignUpCredential) {
     return ApiService.fetchData<SignUpResponse>({
-        url: '/auth/signUp',
+        url: '/register',
         method: 'post',
         data,
     })
 }
 
 export async function apiSignOut() {
-    return ApiService.fetchData({
-        url: '/sign-out',
-        method: 'post',
-    })
+    return Promise.resolve({ data: { result: true } })
 }
 
 export async function apiForgotPassword(data: ForgotPassword) {

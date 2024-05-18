@@ -1,3 +1,3 @@
-import Publishers from './Publishers'
+import Users from '../Videos/Videos'
 
-export default Publishers
+export default Users

@@ -3,3 +3,16 @@
 @import "./template/index.css";
 @import "./vendors/index.css";
 @import "./tailwind/index.css";
+
+@font-face {
+    font-family: IranSans;
+    src: url("/src/assets/fonts/IranSans/IranSans.eot?#iefix") format("embedded-opentype"),
+    url("/src/assets/fonts/IranSans/IranSans.woff") format("woff"),
+    url("/src/assets/fonts/IranSans/IranSans.ttf") format("truetype"),
+    url("/src/assets/fonts/IranSans/IranSans.svg") format("svg");
+    font-weight: 400;
+    font-style: normal;
+}
+html{
+@apply font-IranSans
+}

@@ -3,31 +3,16 @@ import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
 import * as Yup from 'yup'
-import {
-    Checkbox,
-    DatePicker,
-    Notification,
-    Select,
-    toast,
-} from '@/components/ui'
+import { Card, Checkbox, Notification, Select, toast } from '@/components/ui'
+
+import { DatePicker } from 'zaman'
 import { useEffect, useState } from 'react'
 import { AdaptableCard, Loading } from '@/components/shared'
-import { GetCommonData } from '@/services/CommonServices'
-import { ApiCreateCampaign, GetCampaign } from '@/services/CampiagnsService'
+import { ApiEditCampaign, GetCampaign } from '@/services/CampiagnsService'
 import { useNavigate, useParams } from 'react-router-dom'
-
-type SelectBoxType = {
-    label: string
-    value: number
-}
-
-const CostMode: SelectBoxType[] = [
-    { label: 'پخش یک چهارم', value: 1 },
-    { label: 'پخش نیم', value: 2 },
-    { label: 'پخش سه چهارم', value: 3 },
-    { label: 'پخش کامل', value: 4 },
-    { label: 'کلیک', value: 5 },
-]
+import classNames from 'classnames'
+import { useAppSelector } from '@/store'
+import { CostMode, SelectBoxType } from '@/@types/common'
 
 interface valuesTypes {
     categoryId: number
@@ -67,7 +52,7 @@ export default function CampaignCreate() {
     })
     const { id } = useParams()
 
-    const [categories, setCategories] = useState<SelectBoxType[]>([])
+    const { categories } = useAppSelector((state) => state.app.app.commonData)
     const [loading, setLoading] = useState<boolean>(true)
 
     useEffect(() => {
@@ -88,17 +73,6 @@ export default function CampaignCreate() {
             })
             setLoading(false)
         })
-
-        GetCommonData().then((response) => {
-            let cat: SelectBoxType[] = []
-            response.data.data.categories.map((item) => {
-                cat.push({
-                    value: item.id,
-                    label: item.name,
-                })
-            })
-            setCategories(cat)
-        })
     }, [])
 
     const nav = useNavigate()
@@ -110,7 +84,8 @@ export default function CampaignCreate() {
                     initialValues={initialValues}
                     validationSchema={validationSchema}
                     onSubmit={(values, helpers) => {
-                        ApiCreateCampaign({
+                        if (!id) return
+                        ApiEditCampaign(id, {
                             ...values,
                             is_enabled: values.is_enabled ? 1 : 0,
                             is_escapable: values.is_escapable ? 1 : 0,
@@ -150,204 +125,262 @@ export default function CampaignCreate() {
                         setFieldValue,
                         values,
                     }) => (
-                        <Form className={''}>
-                            <FormContainer layout={'vertical'} size={'md'}>
-                                <FormItem
-                                    label="عنوان"
-                                    invalid={
-                                        (errors.title &&
-                                            touched.title) as boolean
-                                    }
-                                    errorMessage={errors.title}
-                                    className={'shrink-0'}
-                                >
-                                    <Field
-                                        type="text"
-                                        autoComplete="true"
-                                        name="title"
-                                        placeholder="عنوان"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="لینک"
-                                    invalid={
-                                        (errors.link && touched.link) as boolean
-                                    }
-                                    errorMessage={errors.link}
-                                    className={'shrink-0'}
-                                >
-                                    <Field
-                                        type="text"
-                                        autoComplete="true"
-                                        name="link"
-                                        placeholder="لینک"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="بودجه"
-                                    invalid={
-                                        (errors.budget &&
-                                            touched.budget) as boolean
-                                    }
-                                    errorMessage={errors.budget}
-                                    className={'shrink-0'}
-                                >
-                                    <Field
-                                        type="number"
-                                        name="budget"
-                                        placeholder="بودجه"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="بودجه روزانه"
-                                    invalid={
-                                        (errors.budget_daily &&
-                                            touched.budget_daily) as boolean
-                                    }
-                                    errorMessage={errors.budget_daily}
-                                    className={'shrink-0'}
-                                >
-                                    <Field
-                                        type="number"
-                                        name="budget_daily"
-                                        placeholder="بودجه روزانه"
-                                        component={Input}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="دسته بندی"
-                                    invalid={
-                                        (errors.categoryId &&
-                                            touched.categoryId) as boolean
-                                    }
-                                    errorMessage={errors.categoryId}
-                                    className={'shrink-0'}
-                                >
-                                    <Select<SelectBoxType>
-                                        value={categories.filter(
-                                            (color) =>
-                                                color.value ===
-                                                values.categoryId
-                                        )}
-                                        options={categories}
-                                        onChange={(opt) =>
-                                            setFieldValue(
-                                                'categoryId',
-                                                opt?.value
-                                            )
+                        <Form>
+                            <Card
+                                title={'مشخصات کمپین'}
+                                header={'مشخصات کمپین'}
+                            >
+                                <FormContainer layout={'inline'} size={'md'}>
+                                    <FormItem
+                                        label="عنوان"
+                                        invalid={
+                                            (errors.title &&
+                                                touched.title) as boolean
                                         }
-                                    />
-                                </FormItem>{' '}
-                                <FormItem
-                                    label="مدل هزینه"
-                                    invalid={
-                                        (errors.cost_mode &&
-                                            touched.cost_mode) as boolean
-                                    }
-                                    errorMessage={errors.cost_mode}
-                                    className={'shrink-0'}
-                                >
-                                    <Select<SelectBoxType>
-                                        value={CostMode.filter(
-                                            (color) =>
-                                                color.value === values.cost_mode
-                                        )}
-                                        options={CostMode}
-                                        onChange={(opt) =>
-                                            setFieldValue(
-                                                'cost_mode',
-                                                opt?.value
-                                            )
+                                        errorMessage={errors.title}
+                                        className={'shrink-0'}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="true"
+                                            name="title"
+                                            className={'min-w-[300px]'}
+                                            placeholder="عنوان"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                    <FormItem
+                                        label="دسته بندی"
+                                        invalid={
+                                            (errors.categoryId &&
+                                                touched.categoryId) as boolean
                                         }
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="تاریخ شروع"
-                                    invalid={
-                                        (errors.start_time &&
-                                            touched.start_time) as boolean
-                                    }
-                                    errorMessage={errors.start_time}
-                                    className={'shrink-0'}
-                                >
-                                    <DatePicker
-                                        locale={'en'}
-                                        clearable={false}
-                                        onChange={(e) => {
-                                            setFieldValue(
-                                                'start_time',
-                                                e?.toISOString().split('T')[0]
-                                            )
-                                        }}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="تاریخ پایان"
-                                    invalid={
-                                        (errors.end_time &&
-                                            touched.end_time) as boolean
-                                    }
-                                    errorMessage={errors.end_time}
-                                    className={'shrink-0'}
-                                >
-                                    <DatePicker
-                                        locale={'fa'}
-                                        clearable={false}
-                                        onChange={(e) => {
-                                            setFieldValue(
-                                                'end_time',
-                                                e?.toISOString().split('T')[0]
-                                            )
-                                        }}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="قابل رد کردن"
-                                    invalid={
-                                        (errors.is_escapable &&
-                                            touched.is_escapable) as boolean
-                                    }
-                                    errorMessage={errors.is_escapable}
-                                    className={'shrink-0'}
+                                        errorMessage={errors.categoryId}
+                                        className={'shrink-0'}
+                                    >
+                                        <Select<SelectBoxType>
+                                            value={categories.filter(
+                                                (color) =>
+                                                    color.value ===
+                                                    values.categoryId
+                                            )}
+                                            className={'min-w-[200px]'}
+                                            options={categories}
+                                            onChange={(opt) =>
+                                                setFieldValue(
+                                                    'categoryId',
+                                                    opt?.value
+                                                )
+                                            }
+                                        />
+                                    </FormItem>
+                                    <FormItem
+                                        label="مدل هزینه"
+                                        invalid={
+                                            (errors.cost_mode &&
+                                                touched.cost_mode) as boolean
+                                        }
+                                        errorMessage={errors.cost_mode}
+                                        className={'shrink-0'}
+                                    >
+                                        <Select<SelectBoxType>
+                                            value={CostMode.filter(
+                                                (color) =>
+                                                    color.value ===
+                                                    values.cost_mode
+                                            )}
+                                            options={CostMode}
+                                            className={'min-w-[200px]'}
+                                            onChange={(opt) =>
+                                                setFieldValue(
+                                                    'cost_mode',
+                                                    opt?.value
+                                                )
+                                            }
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+                            </Card>
+                            <Card
+                                title={'مالی'}
+                                header={'مالی'}
+                                className={'mt-5'}
+                            >
+                                <FormContainer layout={'inline'} size={'md'}>
+                                    <FormItem
+                                        label="بودجه"
+                                        invalid={
+                                            (errors.budget &&
+                                                touched.budget) as boolean
+                                        }
+                                        errorMessage={errors.budget}
+                                        className={'shrink-0'}
+                                    >
+                                        <Field
+                                            type="number"
+                                            name="budget"
+                                            placeholder="بودجه"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                    <FormItem
+                                        label="بودجه روزانه"
+                                        invalid={
+                                            (errors.budget_daily &&
+                                                touched.budget_daily) as boolean
+                                        }
+                                        errorMessage={errors.budget_daily}
+                                        className={'shrink-0'}
+                                    >
+                                        <Field
+                                            type="number"
+                                            name="budget_daily"
+                                            placeholder="بودجه روزانه"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+                            </Card>
+                            <Card
+                                title={'زمان بندی'}
+                                header={'زمان بندی'}
+                                className={'mt-5'}
+                            >
+                                <FormContainer layout={'inline'} size={'md'}>
+                                    <FormItem
+                                        label="تاریخ شروع"
+                                        invalid={
+                                            (errors.start_time &&
+                                                touched.start_time) as boolean
+                                        }
+                                        errorMessage={errors.start_time}
+                                        className={'shrink-0'}
+                                    >
+                                        <DatePicker
+                                            locale={'fa'}
+                                            round={'x2'}
+                                            inputClass={classNames('input')}
+                                            inputAttributes={{
+                                                placeholder: 'تاریخ شروع',
+                                            }}
+                                            defaultValue={values.start_time}
+                                            onChange={(e) => {
+                                                setFieldValue(
+                                                    'start_time',
+                                                    e?.value
+                                                        .toISOString()
+                                                        .split('T')[0]
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+                                    <FormItem
+                                        label="تاریخ پایان"
+                                        invalid={
+                                            (errors.end_time &&
+                                                touched.end_time) as boolean
+                                        }
+                                        errorMessage={errors.end_time}
+                                        className={'shrink-0'}
+                                    >
+                                        <DatePicker
+                                            locale={'fa'}
+                                            round={'x2'}
+                                            defaultValue={values.end_time}
+                                            inputClass={classNames('input')}
+                                            inputAttributes={{
+                                                placeholder: 'تاریخ پایان',
+                                            }}
+                                            onChange={(e) => {
+                                                setFieldValue(
+                                                    'end_time',
+                                                    e?.value
+                                                        .toISOString()
+                                                        .split('T')[0]
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+                            </Card>
+                            <Card
+                                title={'محتوا'}
+                                header={'محتوا'}
+                                className={'mt-5'}
+                            >
+                                <FormContainer
                                     layout={'horizontal'}
+                                    size={'md'}
                                 >
-                                    <Checkbox
-                                        checked={values.is_escapable}
-                                        onChange={(value) => {
-                                            setFieldValue('is_escapable', value)
-                                        }}
-                                    />
-                                </FormItem>
-                                <FormItem
-                                    label="فعال"
-                                    invalid={
-                                        (errors.is_enabled &&
-                                            touched.is_enabled) as boolean
-                                    }
-                                    errorMessage={errors.is_enabled}
-                                    className={'shrink-0'}
-                                    layout={'horizontal'}
-                                >
-                                    <Checkbox
-                                        checked={values.is_enabled}
-                                        onChange={(value) => {
-                                            setFieldValue('is_enabled', value)
-                                        }}
-                                    />
-                                </FormItem>
-                            </FormContainer>
+                                    <FormItem
+                                        label="لینک"
+                                        invalid={
+                                            (errors.link &&
+                                                touched.link) as boolean
+                                        }
+                                        errorMessage={errors.link}
+                                        className={'shrink-0'}
+                                    >
+                                        <Field
+                                            type="text"
+                                            autoComplete="true"
+                                            name="link"
+                                            placeholder="لینک"
+                                            component={Input}
+                                        />
+                                    </FormItem>
+
+                                    <FormItem
+                                        label="قابل رد کردن"
+                                        invalid={
+                                            (errors.is_escapable &&
+                                                touched.is_escapable) as boolean
+                                        }
+                                        errorMessage={errors.is_escapable}
+                                        className={'shrink-0'}
+                                        layout={'horizontal'}
+                                    >
+                                        <Checkbox
+                                            checked={values.is_escapable}
+                                            onChange={(value) => {
+                                                setFieldValue(
+                                                    'is_escapable',
+                                                    value
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+                                    <FormItem
+                                        label="فعال"
+                                        invalid={
+                                            (errors.is_enabled &&
+                                                touched.is_enabled) as boolean
+                                        }
+                                        errorMessage={errors.is_enabled}
+                                        className={'shrink-0'}
+                                        layout={'horizontal'}
+                                    >
+                                        <Checkbox
+                                            checked={values.is_enabled}
+                                            onChange={(value) => {
+                                                setFieldValue(
+                                                    'is_enabled',
+                                                    value
+                                                )
+                                            }}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+                            </Card>
                             <Button
-                                block
+                                className={'px-10 mt-5'}
                                 loading={isSubmitting}
                                 variant="solid"
                                 type="submit"
                             >
                                 {isSubmitting
                                     ? 'در حال انجام...'
-                                    : 'ایجاد کمپین'}
+                                    : 'ویرایش کمپین'}
                             </Button>
                         </Form>
                     )}

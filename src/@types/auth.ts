@@ -18,14 +18,18 @@ export type SignInResponse = {
     }
 }
 
-export type SignUpResponse = SignInResponse
+export type SignUpResponse = {
+    result: boolean
+}
 
 export type SignUpCredential = {
-    firstName: string
-    lastName: string
+    firstname: string
+    lastname: string
     mobile: string
+    email: string
     password: string
-    recommenderId: string
+    password_confirmation: string
+    username: string
 }
 
 export type ForgotPassword = {

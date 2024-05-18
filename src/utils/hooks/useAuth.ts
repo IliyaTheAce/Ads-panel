@@ -74,39 +74,41 @@ function useAuth() {
     const signUp = async (values: SignUpCredential) => {
         try {
             const resp = await apiSignUp(values)
-            if (resp.data) {
-                const { token } = resp.data
-                dispatch(signInSuccess(token))
-                if (resp.data.user) {
-                    const user = {
-                        ...resp.data.user,
-                        userName: `${resp.data.user.firstName} ${resp.data.user.lastName}`,
-                        email: resp.data.user.mobile,
-                    }
-                    dispatch(setUser(user))
-                } else
-                    dispatch(
-                        setUser({
-                            avatar: '',
-                            userName: 'Anonymous',
-                            authority: ['USER'],
-                            email: '',
-                        })
-                    )
-
-                const redirectUrl = query.get(REDIRECT_URL_KEY)
-                navigate(
-                    redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
-                )
-                return {
-                    status: 'success',
-                    message: '',
-                }
-            }
+            return resp.data
+            //
+            // if (resp.data) {
+            //     const { token } = resp.data
+            //     dispatch(signInSuccess(token))
+            //     if (resp.data.user) {
+            //         const user = {
+            //             ...resp.data.user,
+            //             userName: `${resp.data.user.firstName} ${resp.data.user.lastName}`,
+            //             email: resp.data.user.mobile,
+            //         }
+            //         dispatch(setUser(user))
+            //     } else
+            //         dispatch(
+            //             setUser({
+            //                 avatar: '',
+            //                 userName: 'Anonymous',
+            //                 authority: ['USER'],
+            //                 email: '',
+            //             })
+            //         )
+            //
+            //     const redirectUrl = query.get(REDIRECT_URL_KEY)
+            //     navigate(
+            //         redirectUrl ? redirectUrl : appConfig.authenticatedEntryPath
+            //     )
+            //     return {
+            //         status: 'success',
+            //         message: '',
+            //     }
+            // }
             // eslint-disable-next-line  @typescript-eslint/no-explicit-any
         } catch (errors: any) {
             return {
-                status: 'failed',
+                result: false,
                 message: errors?.response?.data?.message || errors.toString(),
             }
         }

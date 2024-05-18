@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 import { AiOutlineReload } from 'react-icons/ai'
 import { IPublishers } from '@/@types/data'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import CampaignDeleteConfirmation from '@/views/Campaigns/Components/CampaignDeleteConfirmation'
 import { PublishersList } from '@/services/PublishersService'
 import PublishersTable from '@/views/Publishers/Components/PublishersTable'
+import PublisherDeleteConfirmation from '@/views/Publishers/Components/PublisherDeleteConfirmation'
 
 const Publishers = () => {
     const [data, setData] = useState<IPublishers[]>([])
@@ -13,15 +13,12 @@ const Publishers = () => {
     const FetchData = () => {
         setLoading(true)
 
-        setTimeout(() => {
-            PublishersList({})
-                .then((res) => {
-                    setData(res.data.data.publishers)
-                    setLoading(false)
-                })
-                .catch((error) => console.log(error.message))
-            setLoading(false)
-        }, 1000)
+        PublishersList({})
+            .then((res) => {
+                setData(res.data.data.publishers)
+                setLoading(false)
+            })
+            .catch((error) => console.log(error.message))
     }
     useEffect(() => {
         FetchData()
@@ -46,8 +43,7 @@ const Publishers = () => {
                 data={data}
                 onRefresh={FetchData}
             />
-            <CampaignDeleteConfirmation onSuccess={FetchData} />
-            {/*<CategoryEditDrawer onSuccess={FetchData} />*/}
+            <PublisherDeleteConfirmation onSuccess={FetchData} />
         </AdaptableCard>
     )
 }

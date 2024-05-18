@@ -4,12 +4,10 @@ import { DataTable, DataTableResetHandle } from '@/components/shared'
 import { HiOutlineEye, HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
 import { toggleViewSideBar, useAppDispatch } from '@/store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import {
-    setSelectedId,
-    toggleDeleteConfirmation,
-    toggleEditSideBar,
-} from '@/store/slices/app'
+import { setSelectedId, toggleDeleteConfirmation } from '@/store/slices/app'
 import { IPublishers } from '@/@types/data'
+import { useNavigate } from 'react-router-dom'
+import { APP_PREFIX_PATH } from '@/constants/route.constant'
 
 const PublishersTable = ({
     loading,
@@ -84,14 +82,13 @@ const PublishersTable = ({
 const ActionColumn = ({ row }: { row: IPublishers }) => {
     const dispatch = useAppDispatch()
     const { textTheme } = useThemeClass()
-
+    const nav = useNavigate()
     const OnShow = () => {
         dispatch(setSelectedId(row.uid))
         dispatch(toggleViewSideBar(true))
     }
     const onEdit = () => {
-        dispatch(setSelectedId(row.uid))
-        dispatch(toggleEditSideBar(true))
+        nav(`${APP_PREFIX_PATH}/publishers/${row.uid}/edit`)
     }
 
     const onDelete = () => {

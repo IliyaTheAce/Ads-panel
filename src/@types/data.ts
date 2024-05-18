@@ -34,6 +34,24 @@ export interface IPublishers {
     uid: string
     title: string
     domain: string
+    costId: number
     createdAt: string
     updatedAt: string
+    categories: { id: number; name: string }[]
+}
+export interface IContent {
+    id: number
+    uid: string
+    format: string
+    title: string
+    file: string
+    resource: string
+}
+export interface IUser {
+    uid: string
+    username: string
+    firstname: string
+    lastname: string
+    email: string
+    mobile: string
 }
