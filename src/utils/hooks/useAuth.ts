@@ -37,11 +37,11 @@ function useAuth() {
             if (resp.data) {
                 const { token } = resp.data.data
                 dispatch(signInSuccess(token))
-                if (resp.data.user) {
+                if (resp.data.data) {
                     const user = {
-                        ...resp.data.user,
-                        userName: `${resp.data.user.firstName} ${resp.data.user.lastName}`,
-                        email: resp.data.user.mobile,
+                        userName: `${resp.data.data.firstname} ${resp.data.data.lastname}`,
+                        email: resp.data.data.username,
+                        authority: [resp.data.data.role],
                     }
                     dispatch(setUser(user))
                 } else

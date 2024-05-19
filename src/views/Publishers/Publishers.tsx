@@ -6,6 +6,7 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import { PublishersList } from '@/services/PublishersService'
 import PublishersTable from '@/views/Publishers/Components/PublishersTable'
 import PublisherDeleteConfirmation from '@/views/Publishers/Components/PublisherDeleteConfirmation'
+import PublisherView from '@/views/Publishers/PublisherView'
 
 const Publishers = () => {
     const [data, setData] = useState<IPublishers[]>([])
@@ -44,6 +45,7 @@ const Publishers = () => {
                 onRefresh={FetchData}
             />
             <PublisherDeleteConfirmation onSuccess={FetchData} />
+            <PublisherView />
         </AdaptableCard>
     )
 }

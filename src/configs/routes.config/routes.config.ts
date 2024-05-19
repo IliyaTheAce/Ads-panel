@@ -40,19 +40,19 @@ export const protectedRoutes = [
         key: 'PublishersList',
         path: `${APP_PREFIX_PATH}/publishers`,
         component: lazy(() => import('@/views/Publishers/Publishers')),
-        authority: [],
+        authority: ['admin'],
     },
     {
         key: 'CreatePublisher',
         path: `${APP_PREFIX_PATH}/publishers/create`,
         component: lazy(() => import('@/views/Publishers/PublisherCreate')),
-        authority: [],
+        authority: ['admin'],
     },
     {
         key: 'EditPublisher',
         path: `${APP_PREFIX_PATH}/publishers/:id/edit`,
         component: lazy(() => import('@/views/Publishers/PublisherEdit')),
-        authority: [],
+        authority: ['admin'],
     },
     {
         key: 'VideosList',
@@ -70,12 +70,24 @@ export const protectedRoutes = [
         key: 'UsersPage',
         path: `${APP_PREFIX_PATH}/users`,
         component: lazy(() => import('@/views/Users/Users')),
-        authority: [],
+        authority: ['admin'],
     },
     {
         key: 'NewUserPage',
         path: `${APP_PREFIX_PATH}/users/create`,
         component: lazy(() => import('@/views/Users/UserCreate')),
+        authority: ['admin'],
+    },
+    {
+        key: 'EditUserPage',
+        path: `${APP_PREFIX_PATH}/users/:id`,
+        component: lazy(() => import('@/views/Users/UserEdit')),
+        authority: ['admin'],
+    },
+    {
+        key: 'ProfilePage',
+        path: `${APP_PREFIX_PATH}/profile`,
+        component: lazy(() => import('@/views/Profile/')),
         authority: [],
     },
 ]

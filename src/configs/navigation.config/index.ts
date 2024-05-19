@@ -54,7 +54,7 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.publishers.collapse',
         icon: 'publisher',
         type: NAV_ITEM_TYPE_COLLAPSE,
-        authority: [],
+        authority: ['admin'],
         subMenu: [
             {
                 key: 'publishersListMenuItem',
@@ -115,6 +115,16 @@ const navigationConfig: NavigationTree[] = [
         title: 'Users',
         translateKey: 'nav.users',
         icon: 'users',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: ['admin'],
+        subMenu: [],
+    },
+    {
+        key: 'ProfileNavItem',
+        path: `${APP_PREFIX_PATH}/profile`,
+        title: 'Profile',
+        translateKey: 'nav.profile',
+        icon: 'profile',
         type: NAV_ITEM_TYPE_ITEM,
         authority: [],
         subMenu: [],

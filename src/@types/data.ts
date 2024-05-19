@@ -54,4 +54,5 @@ export interface IUser {
     lastname: string
     email: string
     mobile: string
+    role: string
 }

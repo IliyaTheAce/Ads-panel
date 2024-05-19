@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react'
 import { AiOutlineReload } from 'react-icons/ai'
 import { IUser } from '@/@types/data'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import PublisherDeleteConfirmation from '@/views/Publishers/Components/PublisherDeleteConfirmation'
 import UsersTable from '@/views/Users/Components/UsersTable'
 import { GetUsersList } from '@/services/UsersService'
 import { Button } from '@/components/ui'
 import { useNavigate } from 'react-router-dom'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
+import UserDetailsDialog from '@/views/Users/Components/UserDetailsDialog'
 
 const Users = () => {
     const [data, setData] = useState<IUser[]>([])
@@ -48,7 +48,7 @@ const Users = () => {
                 </div>
             </div>
             <UsersTable loading={loading} data={data} onRefresh={FetchData} />
-            <PublisherDeleteConfirmation onSuccess={FetchData} />
+            <UserDetailsDialog />
         </AdaptableCard>
     )
 }

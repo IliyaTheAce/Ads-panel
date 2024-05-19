@@ -1,12 +1,13 @@
 import { useMemo, useRef } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable, DataTableResetHandle } from '@/components/shared'
-import { HiOutlineEye, HiOutlineTrash } from 'react-icons/hi'
+import { HiOutlineEye, HiOutlinePencil } from 'react-icons/hi'
 import { toggleViewSideBar, useAppDispatch } from '@/store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import { setSelectedId, toggleDeleteConfirmation } from '@/store/slices/app'
+import { setSelectedId } from '@/store/slices/app'
 import { IUser } from '@/@types/data'
 import { useNavigate } from 'react-router-dom'
+import { APP_PREFIX_PATH } from '@/constants/route.constant'
 
 const UsersTable = ({
     loading,
@@ -50,12 +51,12 @@ const UsersTable = ({
                 accessorKey: 'email',
                 enableSorting: false,
             },
-            // {
-            //     header: 'تنظیمات',
-            //     accessorKey: 'id',
-            //     enableSorting: false,
-            //     cell: (props) => <ActionColumn row={props.row.original} />,
-            // },
+            {
+                header: 'تنظیمات',
+                accessorKey: 'id',
+                enableSorting: false,
+                cell: (props) => <ActionColumn row={props.row.original} />,
+            },
         ],
         []
     )
@@ -83,9 +84,8 @@ const ActionColumn = ({ row }: { row: IUser }) => {
         dispatch(setSelectedId(row.uid))
         dispatch(toggleViewSideBar(true))
     }
-    const onDelete = () => {
-        dispatch(setSelectedId(row.uid))
-        dispatch(toggleDeleteConfirmation(true))
+    const onEdit = () => {
+        nav(`${APP_PREFIX_PATH}/users/${row.uid}`)
     }
 
     return (
@@ -97,10 +97,10 @@ const ActionColumn = ({ row }: { row: IUser }) => {
                 <HiOutlineEye />
             </span>
             <span
-                className="cursor-pointer p-2 hover:text-red-500"
-                onClick={onDelete}
+                className={`cursor-pointer p-2 hover:${textTheme}`}
+                onClick={onEdit}
             >
-                <HiOutlineTrash />
+                <HiOutlinePencil />
             </span>
         </div>
     )

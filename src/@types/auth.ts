@@ -6,15 +6,10 @@ export type SignInCredential = {
 export type SignInResponse = {
     data: {
         token: string
-    }
-    user: {
-        firstName: string
-        lastName: string
-        mobile: string
         username: string
-        authority: string[]
-        avatar: string
-        email: string
+        lastname: string
+        firstname: string
+        role: string
     }
 }
 
