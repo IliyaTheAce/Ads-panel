@@ -2,11 +2,10 @@ import { useMemo, useRef } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable, DataTableResetHandle } from '@/components/shared'
 import { HiOutlineEye, HiOutlineTrash } from 'react-icons/hi'
-import { toggleViewSideBar, useAppDispatch } from '@/store'
+import { useAppDispatch } from '@/store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { setSelectedId, toggleDeleteConfirmation } from '@/store/slices/app'
 import { IContent } from '@/@types/data'
-import { useNavigate } from 'react-router-dom'
 
 const VideosTable = ({
     loading,
@@ -65,11 +64,7 @@ const VideosTable = ({
 const ActionColumn = ({ row }: { row: IContent }) => {
     const dispatch = useAppDispatch()
     const { textTheme } = useThemeClass()
-    const nav = useNavigate()
-    const OnShow = () => {
-        dispatch(setSelectedId(row.uid))
-        dispatch(toggleViewSideBar(true))
-    }
+
     const onDelete = () => {
         dispatch(setSelectedId(row.uid))
         dispatch(toggleDeleteConfirmation(true))
@@ -77,12 +72,13 @@ const ActionColumn = ({ row }: { row: IContent }) => {
 
     return (
         <div className="flex justify-end text-lg">
-            <span
+            <a
                 className={`cursor-pointer p-2 hover:${textTheme}`}
-                onClick={OnShow}
+                href={row.resource}
+                target={'_blank'}
             >
                 <HiOutlineEye />
-            </span>
+            </a>
             <span
                 className="cursor-pointer p-2 hover:text-red-500"
                 onClick={onDelete}

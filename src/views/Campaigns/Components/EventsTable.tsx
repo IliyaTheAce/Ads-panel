@@ -1,13 +1,11 @@
 import { useMemo, useRef } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable, DataTableResetHandle } from '@/components/shared'
-import { HiOutlineEye } from 'react-icons/hi'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 
 type EventType = {
-    uid: string
-    title: string
-    resource: string
+    amount: number
+    date: string
 }
 const EventsTable = ({
     loading,
@@ -22,39 +20,29 @@ const EventsTable = ({
         () => [
             {
                 header: '#',
-                accessorKey: 'id',
+                accessorKey: 'amount',
                 enableSorting: false,
                 cell: (props) => {
                     return props.row.index + 1
                 },
             },
             {
-                header: 'عنوان',
-                accessorKey: 'title',
+                header: 'مبلغ',
+                accessorKey: 'amount',
                 enableSorting: false,
             },
             {
-                header: 'تنظیمات',
-                accessorKey: 'resource',
+                header: 'تاریخ',
+                accessorKey: 'date',
                 enableSorting: false,
-                cell: (props) => (
-                    <div className="flex justify-end text-lg">
-                        <a
-                            target={'_blank'}
-                            href={props.row.original.resource}
-                            className={`cursor-pointer p-2 hover:${textTheme}`}
-                        >
-                            <HiOutlineEye />
-                        </a>
-                    </div>
-                ),
             },
         ],
         []
     )
 
     return (
-        <div>
+        <div className={'mt-10'}>
+            <h4>رویداد ها</h4>
             <DataTable
                 ref={tableRef}
                 columns={columns}

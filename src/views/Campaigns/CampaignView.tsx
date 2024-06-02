@@ -1,9 +1,7 @@
 import { Chart, Loading } from '@/components/shared'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode } from 'react'
 import { Card, Tag } from '@/components/ui'
-import { useAppDispatch } from '@/store'
-import { ICampaign } from '@/@types/data'
-import { GetCampaign } from '@/services/CampiagnsService'
+import { GetCampaign, GetCampaignEvents } from '@/services/CampiagnsService'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useParams } from 'react-router-dom'
 import {
@@ -16,57 +14,69 @@ import {
     MdTitle,
     SlCalender,
 } from 'react-icons/all'
-import { COLORS } from '@/constants/chart.constant'
-import ContentTable from '@/views/Campaigns/Components/ContentTable'
 import { CostMode } from '@/@types/common'
+import { useQuery } from '@tanstack/react-query'
+import ContentTable from '@/views/Campaigns/Components/ContentTable'
+import EventsTable from '@/views/Campaigns/Components/EventsTable'
 
 const CampaignView = () => {
-    const [data, setData] = useState<ICampaign>()
-    const [loading, setLoading] = useState(true)
     const { id } = useParams()
-    const dispatch = useAppDispatch()
-    const FetchData = () => {
-        if (!id) {
-            throw Error('No Id provided!')
+    const chartInitialData: {
+        chart: {
+            series: { name: string; data: number[] }[]
+            categories: string[]
         }
-        setLoading(true)
-
-        GetCampaign(id)
-            .then((res) => {
-                setData(res.data.data.campaign)
-                setLoading(false)
-            })
-            .catch((error) => console.log(error.message))
+        days: { amount: number; date: string }[]
+    } = {
+        chart: {
+            categories: [],
+            series: [],
+        },
+        days: [],
     }
-    useEffect(() => {
-        FetchData()
-    }, [])
+    const eventsQuery = useQuery({
+        queryKey: ['events', id],
+        queryFn: async () => {
+            const response = await GetCampaignEvents(id)
+            console.log(response.data.data)
+            return response.data.data
+        },
+    })
+
+    const campaignsQuery = useQuery({
+        queryKey: ['campaign', id],
+        queryFn: async () => {
+            const response = await GetCampaign(id)
+            return response.data.data.campaign
+        },
+    })
+
     const { textTheme } = useThemeClass()
 
     return (
-        <Loading loading={loading}>
+        <Loading loading={campaignsQuery.isLoading}>
             <Card
                 className="h-full "
                 bodyClass="h-full"
-                header={`کمپین ${data?.title}`}
+                header={`کمپین ${campaignsQuery.data?.title}`}
             >
                 <div className={' grid grid-cols-2'}>
                     <div>
                         <InformationSession
                             icon={<MdTitle />}
                             title={'عنوان'}
-                            content={data?.title}
+                            content={campaignsQuery.data?.title}
                         />
                         <InformationSession
                             icon={<BiVideo />}
                             title={'مدل کمپین'}
-                            content={data?.type}
+                            content={campaignsQuery.data?.type}
                         />
                         <InformationSession
                             icon={<GrStatusUnknown />}
                             title={'وضعیت کمپین'}
                             content={
-                                data?.is_enabled ? (
+                                campaignsQuery.data?.is_enabled ? (
                                     <Tag prefix prefixClass="bg-emerald-500">
                                         فعال
                                     </Tag>
@@ -80,67 +90,70 @@ const CampaignView = () => {
                         <InformationSession
                             icon={<SlCalender />}
                             title={'تاریخ شروع'}
-                            content={data?.start_time}
+                            content={campaignsQuery.data?.start_time}
                         />
                         <InformationSession
                             icon={<SlCalender />}
                             title={'تاریخ پایان'}
                             content={
-                                data?.end_time ? data.end_time : 'مشخص نشده'
+                                campaignsQuery.data?.end_time
+                                    ? campaignsQuery.data.end_time
+                                    : 'مشخص نشده'
                             }
                         />
                         <InformationSession
                             icon={<BiCoinStack />}
                             title={'بودجه'}
-                            content={data?.budget}
+                            content={campaignsQuery.data?.budget}
                         />
                         <InformationSession
                             icon={<BiCoin />}
                             title={'بودجه روزانه'}
-                            content={data?.budget_daily}
+                            content={campaignsQuery.data?.budget_daily}
                         />
                         <InformationSession
                             icon={<BiCategory />}
                             title={'دسته بندی'}
-                            content={data?.category.name}
+                            content={campaignsQuery.data?.category.name}
                         />
                         <InformationSession
                             icon={<BsConeStriped />}
                             title={'نحوه پخش'}
                             content={CostMode.map((item) => {
-                                if (data?.cost_mode === item.value)
+                                if (
+                                    campaignsQuery.data?.cost_mode ===
+                                    item.value
+                                )
                                     return item.label
                             })}
                         />
                         <InformationSession
                             icon={<BsConeStriped />}
                             title={'مصرف روزانه'}
-                            content={data?.daily_spent}
+                            content={campaignsQuery.data?.daily_spent}
                         />
+
+                        {eventsQuery.status === 'success' && (
+                            <EventsTable
+                                loading={eventsQuery.isLoading}
+                                data={eventsQuery.data.days}
+                            />
+                        )}
                     </div>
                     <div>
-                        <Chart
-                            direction={'rtl'}
-                            className={'mb-5'}
-                            donutTitle={'بودجه'}
-                            series={
-                                data ? [data.budget_daily, data.budget] : []
-                            }
-                            height={250}
-                            customOptions={{
-                                colors: COLORS,
-                                dataLabels: {
-                                    enabled: true,
-                                },
-                                legend: { position: 'right' },
-                                labels: ['بودجه روزانه', 'بودجه مانده'],
-                            }}
-                            type="donut"
-                        />
-                        {data?.contents !== undefined && (
+                        {eventsQuery.status === 'success' && (
+                            <Chart
+                                direction={'rtl'}
+                                series={eventsQuery.data?.chart.series}
+                                xAxis={eventsQuery.data?.chart.categories}
+                                height="380px"
+                                customOptions={{ legend: { show: false } }}
+                            />
+                        )}
+                        {campaignsQuery.data && (
                             <ContentTable
-                                data={data?.contents}
-                                loading={loading}
+                                data={campaignsQuery.data.contents}
+                                loading={campaignsQuery.isLoading}
                             />
                         )}
                     </div>

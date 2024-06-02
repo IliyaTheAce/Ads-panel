@@ -7,6 +7,7 @@ import Layout from '@/components/layouts'
 import mockServer from './mock'
 import appConfig from '@/configs/app.config'
 import './locales'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 const environment = process.env.NODE_ENV
 
@@ -17,15 +18,19 @@ const environment = process.env.NODE_ENV
 if (environment !== 'production' && appConfig.enableMock) {
     mockServer({ environment })
 }
+const queryClient = new QueryClient()
+
 function App() {
     return (
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
-                <BrowserRouter>
-                    <Theme>
-                        <Layout />
-                    </Theme>
-                </BrowserRouter>
+                <QueryClientProvider client={queryClient}>
+                    <BrowserRouter>
+                        <Theme>
+                            <Layout />
+                        </Theme>
+                    </BrowserRouter>
+                </QueryClientProvider>
             </PersistGate>
         </Provider>
     )

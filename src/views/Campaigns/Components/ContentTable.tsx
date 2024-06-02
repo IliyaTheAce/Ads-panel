@@ -54,7 +54,8 @@ const ContentTable = ({
     )
 
     return (
-        <div>
+        <div className={'mt-10'}>
+            <h4>محتوا ها</h4>
             <DataTable
                 ref={tableRef}
                 columns={columns}

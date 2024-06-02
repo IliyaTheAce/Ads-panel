@@ -27,9 +27,30 @@ interface GetCampaignResponse {
     }
 }
 
-export async function GetCampaign(id: string) {
+export async function GetCampaign(id: string | undefined) {
     return ApiService.fetchData<GetCampaignResponse>({
         url: `/campaigns/${id}`,
+        method: 'get',
+    })
+}
+interface GetCampaignEventsResponse {
+    result: boolean
+    message: string
+
+    data: {
+        chart: {
+            series: {
+                name: string
+                data: number[]
+            }[]
+            categories: string[]
+        }
+        days: { amount: number; date: string }[]
+    }
+}
+export async function GetCampaignEvents(id: string | undefined) {
+    return ApiService.fetchData<GetCampaignEventsResponse>({
+        url: `/campaigns/${id}/events`,
         method: 'get',
     })
 }

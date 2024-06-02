@@ -11,8 +11,8 @@ const CampaignView = () => {
     const dispatch = useAppDispatch()
     const dialogOpen = useAppSelector((state) => state.app.app.viewSideBarOpen)
     const selectedId = useAppSelector((state) => state.app.app.selectedId)
-
     const [data, setData] = useState<IPublishers>()
+
     useEffect(() => {
         if (!dialogOpen || !selectedId) return
         GetPublisher(selectedId)

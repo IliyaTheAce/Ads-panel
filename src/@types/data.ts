@@ -18,7 +18,7 @@ export interface ICampaign {
     budget_daily: number
     start_time: string
     end_time: string
-    contents?: {
+    contents: {
         id: number
         uid: string
         format: string
