@@ -13,12 +13,6 @@ export const protectedRoutes: Routes = [
         authority: [],
     },
     {
-        key: 'CampaignsList',
-        path: `${APP_PREFIX_PATH}/campaigns`,
-        component: lazy(() => import('@/views/Campaigns')),
-        authority: [],
-    },
-    {
         key: 'CreateCampaign',
         path: `${APP_PREFIX_PATH}/campaigns/create`,
         component: lazy(() => import('@/views/Campaigns/CampaignCreate')),
@@ -34,6 +28,18 @@ export const protectedRoutes: Routes = [
         key: 'EditCampaign',
         path: `${APP_PREFIX_PATH}/campaigns/:id/edit`,
         component: lazy(() => import('@/views/Campaigns/CampaignEdit')),
+        authority: [],
+    },
+    {
+        key: 'CampaignsList',
+        path: `${APP_PREFIX_PATH}/campaigns`,
+        component: lazy(() => import('@/views/Campaigns')),
+        authority: [],
+    },
+    {
+        key: 'CampaignsListExpired',
+        path: `${APP_PREFIX_PATH}/campaigns/:expired`,
+        component: lazy(() => import('@/views/Campaigns')),
         authority: [],
     },
     {
@@ -106,6 +112,12 @@ export const protectedRoutes: Routes = [
         key: 'SuccessfulPaymentPage',
         path: `${APP_PREFIX_PATH}/payment/successful/:slug`,
         component: lazy(() => import('@/views/Payment/Successful')),
+        authority: [],
+    },
+    {
+        key: 'FailedPaymentPage',
+        path: `${APP_PREFIX_PATH}/payment/failed`,
+        component: lazy(() => import('@/views/Payment/Failed')),
         authority: [],
     },
 ]

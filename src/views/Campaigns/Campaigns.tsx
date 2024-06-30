@@ -10,6 +10,7 @@ import { Input, Select } from '@/components/ui'
 import { ApprovedModes, SelectBoxType } from '@/@types/common'
 import { useAppSelector } from '@/store'
 import useAuthority from '@/utils/hooks/useAuthority'
+import { useParams } from 'react-router-dom'
 
 const Campaigns = () => {
     const [data, setData] = useState<ICampaign[]>([])
@@ -20,7 +21,6 @@ const Campaigns = () => {
     const categories: SelectBoxType[] = [{ label: 'همه', value: -1 }, ...cat]
 
     const { authority } = useAppSelector((state) => state.auth.user)
-    //TODO: Add expired
     const hasAuthory = useAuthority(authority, ['admin'])
     const [filter, setFilter] = useState<{
         category: number
@@ -31,13 +31,18 @@ const Campaigns = () => {
         keyword: '',
         category: -1,
     })
+
+    const params = useParams()
+    const role = useAppSelector((state) => state.auth.user.authority)
+    const isAdmin = useAuthority(role, ['admin'])
     const FetchData = () => {
+        const expired = isAdmin ? '-1' : params.expired ? '1' : '0'
         setLoading(true)
-        console.log(filter.category)
         CampaignsList({
             approved: filter.approved,
             category_id: filter.category,
             keyword: filter.keyword,
+            expired,
         })
             .then((res) => {
                 setData(res.data.data.campaigns)

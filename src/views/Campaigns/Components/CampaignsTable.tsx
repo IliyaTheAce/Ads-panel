@@ -9,7 +9,7 @@ import appConfig from '@/configs/app.config'
 import { ICampaign } from '@/@types/data'
 import { useNavigate } from 'react-router-dom'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
-import { Tag } from '@/components/ui'
+import { Button, Tag } from '@/components/ui'
 
 const CampaignsTable = ({
     loading,
@@ -96,11 +96,11 @@ const CampaignsTable = ({
                 cell: (props) => {
                     return props.row.original.is_enabled === 1 ? (
                         <Tag prefix prefixClass="bg-emerald-500">
-                            فعال{' '}
+                            فعال
                         </Tag>
                     ) : (
                         <Tag prefix prefixClass="bg-rose-500">
-                            غیر فعال{' '}
+                            غیر فعال
                         </Tag>
                     )
                 },
@@ -147,8 +147,17 @@ const ActionColumn = ({ row }: { row: ICampaign }) => {
         dispatch(toggleDeleteConfirmation(true))
     }
 
+    const onPay = () => {
+        nav(`${APP_PREFIX_PATH}/invoices/preview/${row.uid}`)
+    }
+
     return (
         <div className="flex justify-end text-lg">
+            {row.status === 0 && (
+                <Button variant={'solid'} size={'sm'} onClick={onPay}>
+                    پرداخت
+                </Button>
+            )}
             <span
                 className={`cursor-pointer p-2 hover:${textTheme}`}
                 onClick={OnShow}

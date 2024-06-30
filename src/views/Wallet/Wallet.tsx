@@ -2,18 +2,20 @@ import { AiOutlineReload } from 'react-icons/ai'
 import { AdaptableCard } from '@/components/shared'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useEffect, useState } from 'react'
-import { ITransaction } from '@/@types/data'
-import { GetTransactions } from '@/services/WalletService'
+import { IInvoice, ITransaction } from '@/@types/data'
+import { GetInvoiceList, GetTransactions } from '@/services/WalletService'
 import { Button, Tabs } from '@/components/ui'
 import TransactionsTable from '@/views/Wallet/Components/TransactionsTable'
 import TabList from '@/components/ui/Tabs/TabList'
 import TabNav from '@/components/ui/Tabs/TabNav'
 import TabContent from '@/components/ui/Tabs/TabContent'
 import WithdrawConfirmDialog from '@/views/Wallet/Components/WithdrawConfirmDialog'
+import InvoicesTable from '@/views/Wallet/Components/InvoicesTable'
 
 export default function Wallet() {
     const { textTheme } = useThemeClass()
-    const [data, setData] = useState<ITransaction[]>([])
+    const [transactionsData, setTransactionsData] = useState<ITransaction[]>([])
+    const [invoiceData, setInvoiceData] = useState<IInvoice[]>([])
     const [loading, setLoading] = useState(true)
     const [isDialogOpen, setDialogOpen] = useState(false)
     const FetchData = () => {
@@ -21,7 +23,14 @@ export default function Wallet() {
 
         GetTransactions()
             .then((res) => {
-                setData(res.data.data.transactions)
+                setTransactionsData(res.data.data.transactions)
+                setLoading(false)
+            })
+            .catch((error) => console.log(error.message))
+
+        GetInvoiceList()
+            .then((res) => {
+                setInvoiceData(res.data.data.invoices)
                 setLoading(false)
             })
             .catch((error) => console.log(error.message))
@@ -60,24 +69,23 @@ export default function Wallet() {
                 <Tabs defaultValue="transactions" variant={'pill'}>
                     <TabList>
                         <TabNav value="transactions">نراکنش های کیف پول</TabNav>
-                        <TabNav value="invoices">Invoices</TabNav>
+                        <TabNav value="invoices">صورت حساب ها</TabNav>
                         <TabNav value="tab3">Contact</TabNav>
                     </TabList>
                     <div className="p-4">
                         <TabContent value="transactions">
                             <TransactionsTable
                                 loading={loading}
-                                data={data}
+                                data={transactionsData}
                                 onRefresh={FetchData}
                             />
                         </TabContent>
                         <TabContent value="invoices">
-                            <p>
-                                A computer lets you make more mistakes faster
-                                than any invention in human history with the
-                                possible exceptions of handguns and tequila.
-                                (Mitch Radcliffe).
-                            </p>
+                            <InvoicesTable
+                                loading={loading}
+                                data={invoiceData}
+                                onRefresh={FetchData}
+                            />
                         </TabContent>
                         <TabContent value="tab3">
                             <p>

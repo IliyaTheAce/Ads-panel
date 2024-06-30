@@ -12,6 +12,7 @@ export async function CampaignsList(params: {
     category_id?: number
     keyword?: string
     approved?: number
+    expired?: string
 }) {
     return ApiService.fetchData<CampaignsListResponse>({
         url: '/campaigns',
@@ -108,11 +109,28 @@ interface InvoicePreviewResponse {
         campaign: {
             uid: string
             title: string
+            amount_wallet: number
             amount: number
             tax_amount: number
             total_amount: number
             start_time: string
             end_time: string
+        }
+    }
+}
+
+interface InvoiceStoreResponse {
+    result: boolean
+    data: {
+        needPay: boolean
+        invoice: {
+            uid: string
+            title: string
+            amount: number
+            tax_amount: number
+            wallet_amount: number
+            total_amount: number
+            url: string
         }
     }
 }
@@ -123,9 +141,12 @@ export async function ApiInvoicePreview(id: string) {
         method: 'get',
     })
 }
-export async function ApiInvoiceStore(id: string) {
-    return ApiService.fetchData<InvoicePreviewResponse>({
+export async function ApiInvoiceStore(id: string, from_wallet: boolean) {
+    return ApiService.fetchData<InvoiceStoreResponse>({
         url: `/campaigns/${id}/invoice/store`,
-        method: 'get',
+        method: 'post',
+        data: {
+            from_wallet,
+        },
     })
 }

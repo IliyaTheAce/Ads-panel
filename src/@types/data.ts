@@ -2,6 +2,7 @@ export interface ICampaign {
     uid: string
     title: string
     spent: number
+    status?: number
     daily_spent: number
     type: string
     is_enabled: number
@@ -67,4 +68,17 @@ export interface ITransaction {
     time: string
     change: number
     balance: number
+}
+
+export interface IInvoice {
+    uid: string
+    title: string
+    amount: number
+    tax_amount: number
+    total_amount: number
+    status: number
+    status_str: string
+    trace_number: string
+    ref_number: string
+    createdAt: string
 }
