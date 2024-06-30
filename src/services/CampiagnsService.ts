@@ -85,6 +85,7 @@ type CreateCampaignRequest = {
     is_enabled: number
     is_escapable: number
     cost_mode: number
+    approved?: number
 }
 
 export async function ApiCreateCampaign(data: CreateCampaignRequest) {

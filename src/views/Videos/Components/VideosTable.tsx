@@ -2,15 +2,21 @@ import { useMemo, useRef } from 'react'
 import type { ColumnDef } from '@tanstack/react-table'
 import { DataTable, DataTableResetHandle } from '@/components/shared'
 import { HiOutlineEye, HiOutlineTrash } from 'react-icons/hi'
-import { useAppDispatch } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { setSelectedId, toggleDeleteConfirmation } from '@/store/slices/app'
 import { IContent } from '@/@types/data'
-import { Tag } from '@/components/ui'
+import { Tag, Tooltip } from '@/components/ui'
+import useAuthority from '@/utils/hooks/useAuthority'
+import { BiCheck, MdClose } from 'react-icons/all'
+import { ContentSetApproval } from '@/services/ContentsService'
+import toast from '@/components/ui/toast'
+import Notification from '@/components/ui/Notification'
 
 const VideosTable = ({
     loading,
     data,
+    onRefresh,
 }: {
     data: IContent[]
     loading: boolean
@@ -57,7 +63,12 @@ const VideosTable = ({
                 header: 'تنظیمات',
                 accessorKey: 'id',
                 enableSorting: false,
-                cell: (props) => <ActionColumn row={props.row.original} />,
+                cell: (props) => (
+                    <ActionColumn
+                        row={props.row.original}
+                        onSuccess={onRefresh}
+                    />
+                ),
             },
         ],
         []
@@ -78,17 +89,65 @@ const VideosTable = ({
     )
 }
 
-const ActionColumn = ({ row }: { row: IContent }) => {
+const ActionColumn = ({
+    row,
+    onSuccess,
+}: {
+    row: IContent
+    onSuccess: () => void
+}) => {
     const dispatch = useAppDispatch()
     const { textTheme } = useThemeClass()
+    const { authority } = useAppSelector((state) => state.auth.user)
+
+    const hasAuthority = useAuthority(authority, ['admin'])
 
     const onDelete = () => {
         dispatch(setSelectedId(row.uid))
         dispatch(toggleDeleteConfirmation(true))
     }
 
+    const OnSetApproval = () => {
+        ContentSetApproval(row.uid, {
+            approved: row.approved === 1 ? 0 : 1,
+        }).then((res) => {
+            if (res.data.result) {
+                onSuccess()
+                toast.push(
+                    <Notification
+                        title={'عملیات موفق'}
+                        type="success"
+                        duration={2500}
+                    ></Notification>,
+                    {
+                        placement: 'top-end',
+                    }
+                )
+            }
+        })
+    }
+
     return (
         <div className="flex justify-end text-lg">
+            {hasAuthority && row.approved === 1 ? (
+                <Tooltip title={'عدم تایید'}>
+                    <span
+                        className="cursor-pointer p-2 hover:text-red-500"
+                        onClick={OnSetApproval}
+                    >
+                        <MdClose />
+                    </span>
+                </Tooltip>
+            ) : (
+                <Tooltip title={'تایید'}>
+                    <span
+                        className={`cursor-pointer p-2 hover:${textTheme}`}
+                        onClick={OnSetApproval}
+                    >
+                        <BiCheck />
+                    </span>
+                </Tooltip>
+            )}
             <a
                 className={`cursor-pointer p-2 hover:${textTheme}`}
                 href={row.resource}

@@ -1,14 +1,14 @@
 import {
     HiCheckCircle,
-    HiOutlineInformationCircle,
     HiOutlineExclamation,
     HiOutlineExclamationCircle,
+    HiOutlineInformationCircle,
 } from 'react-icons/hi'
 import Avatar from '@/components/ui/Avatar'
 import Button from '@/components/ui/Button'
+import type { DialogProps } from '@/components/ui/Dialog'
 import Dialog from '@/components/ui/Dialog'
 import type { ReactNode } from 'react'
-import type { DialogProps } from '@/components/ui/Dialog'
 
 type StatusType = 'info' | 'success' | 'warning' | 'danger'
 
@@ -20,6 +20,7 @@ interface ConfirmDialogProps extends DialogProps {
     title?: ReactNode | string
     onCancel?: () => void
     onConfirm?: () => void
+    showCancelButton?: boolean
 }
 
 const StatusIcon = ({ status }: { status: StatusType }) => {
@@ -84,6 +85,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
         cancelText = 'Cancel',
         confirmText = 'Confirm',
         confirmButtonColor,
+        showCancelButton = true,
         ...rest
     } = props
 
@@ -101,7 +103,7 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
                 <div>
                     <StatusIcon status={type} />
                 </div>
-                <div className="ml-4 rtl:mr-4">
+                <div className="ml-4 rtl:mr-4 w-full">
                     <h5 className="mb-2">{title}</h5>
                     {children}
                 </div>
@@ -109,7 +111,9 @@ const ConfirmDialog = (props: ConfirmDialogProps) => {
             <div className="text-right px-6 py-3 bg-gray-100 dark:bg-gray-700 rounded-bl-lg rounded-br-lg">
                 <Button
                     size="sm"
-                    className="ltr:mr-2 rtl:ml-2"
+                    className={`ltr:mr-2 rtl:ml-2 ${
+                        !showCancelButton && 'hidden'
+                    }`}
                     onClick={handleCancel}
                 >
                     {cancelText}

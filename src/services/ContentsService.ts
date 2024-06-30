@@ -86,3 +86,13 @@ export async function ApiCreateContent(data: FormData) {
         data,
     })
 }
+export async function ContentSetApproval(
+    id: string,
+    data: { approved: number }
+) {
+    return ApiService.fetchData<GetPublisherResponse>({
+        url: `/contents/${id}`,
+        method: 'put',
+        data,
+    })
+}

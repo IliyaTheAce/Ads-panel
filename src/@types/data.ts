@@ -82,3 +82,21 @@ export interface IInvoice {
     ref_number: string
     createdAt: string
 }
+
+export interface IWithdraw {
+    uid: string
+    amount: number
+    status: number
+    createdAt: string
+    user: {
+        uid: string
+        firstname: string
+        lastname: string
+        mobile: string
+        bank_name: string
+        bank_card: string
+        bank_sheba: string
+    }
+    statusAt: string
+    note: string
+}

@@ -14,6 +14,7 @@ import classNames from 'classnames'
 import { useAppSelector } from '@/store'
 import { CostMode, SelectBoxType } from '@/@types/common'
 import CreatableSelect from 'react-select/creatable'
+import useAuthority from '@/utils/hooks/useAuthority'
 
 interface valuesTypes {
     categories: SelectBoxType[]
@@ -27,6 +28,7 @@ interface valuesTypes {
     is_escapable: boolean
     cost_mode: number
     link: string
+    approved?: boolean
 }
 
 export default function CampaignCreate() {
@@ -42,6 +44,7 @@ export default function CampaignCreate() {
         link: '',
         type: 'VIDEO',
         start_time: '',
+        approved: undefined,
     })
     const validationSchema = Yup.object().shape({
         title: Yup.string().required('لطفا نام را وارد کنید'),
@@ -52,7 +55,8 @@ export default function CampaignCreate() {
         end_time: Yup.string().optional(),
     })
     const { id } = useParams()
-
+    const { authority } = useAppSelector((state) => state.auth.user)
+    const hasAuthority = useAuthority(authority, ['admin'])
     const { categories } = useAppSelector((state) => state.app.app.commonData)
     const [loading, setLoading] = useState<boolean>(true)
 
@@ -69,6 +73,7 @@ export default function CampaignCreate() {
                 categories,
                 is_enabled: camp.is_enabled === 1,
                 is_escapable: camp.is_escapable === 1,
+                approved: camp.approved === 1,
             })
             setLoading(false)
         })
@@ -88,12 +93,12 @@ export default function CampaignCreate() {
                         values.categories.map((item) => {
                             categories.push(item.value)
                         })
-                        //TODO: There are errors in response
                         ApiEditCampaign(id, {
                             ...values,
                             categories,
                             is_enabled: values.is_enabled ? 1 : 0,
                             is_escapable: values.is_escapable ? 1 : 0,
+                            approved: values.approved ? 1 : 0,
                         })
                             .then((response) => {
                                 if (response.data.result) {
@@ -378,6 +383,34 @@ export default function CampaignCreate() {
                                                     'is_enabled',
                                                     value
                                                 )
+                                            }}
+                                        />
+                                    </FormItem>
+                                </FormContainer>
+                            </Card>
+                            <Card
+                                title={'ادمین'}
+                                header={'ادمین'}
+                                className={`mt-5 ${!hasAuthority && 'hidden'}`}
+                            >
+                                <FormContainer
+                                    layout={'horizontal'}
+                                    size={'md'}
+                                >
+                                    <FormItem
+                                        label="تایید شده"
+                                        invalid={
+                                            (errors.approved &&
+                                                touched.approved) as boolean
+                                        }
+                                        errorMessage={errors.approved}
+                                        className={'shrink-0'}
+                                        layout={'horizontal'}
+                                    >
+                                        <Checkbox
+                                            checked={values.approved}
+                                            onChange={(value) => {
+                                                setFieldValue('approved', value)
                                             }}
                                         />
                                     </FormItem>

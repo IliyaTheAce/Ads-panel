@@ -1,8 +1,13 @@
 import ApiService from '@/services/ApiService'
-import { IInvoice, ITransaction } from '@/@types/data'
+import { IInvoice, ITransaction, IWithdraw } from '@/@types/data'
 
 interface TransactionsResponse {
     result: boolean
+    meta: {
+        user: {
+            wallet: number
+        }
+    }
     data: {
         transactions: ITransaction[]
     }
@@ -32,6 +37,20 @@ interface InvoiceListResponse {
 export async function GetInvoiceList() {
     return ApiService.fetchData<InvoiceListResponse>({
         url: '/invoices',
+        method: 'get',
+    })
+}
+
+interface WithdrawResponse {
+    result: boolean
+    data: {
+        witdraws: IWithdraw[]
+    }
+}
+
+export async function GetWithdrawRequestsList() {
+    return ApiService.fetchData<WithdrawResponse>({
+        url: '/withdrawls/list',
         method: 'get',
     })
 }

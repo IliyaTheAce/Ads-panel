@@ -5,6 +5,9 @@ import { SelectBoxType } from '@/@types/common'
 
 export type appState = {
     deleteConfirmation: boolean
+    approve: boolean
+    ShowDialog: any
+    decline: boolean
     selectedId?: string
     editSideBarOpen: boolean
     viewSideBarOpen: boolean
@@ -15,7 +18,10 @@ export type appState = {
 }
 
 const initialState: appState = {
+    ShowDialog: null,
     deleteConfirmation: false,
+    approve: false,
+    decline: false,
     editSideBarOpen: false,
     viewSideBarOpen: false,
     selectedId: undefined,
@@ -40,8 +46,14 @@ const appSlice = createSlice({
         toggleDeleteConfirmation(state, action: PayloadAction<boolean>) {
             state.deleteConfirmation = action.payload
         },
-        toggleEditSideBar(state, action: PayloadAction<boolean>) {
-            state.editSideBarOpen = action.payload
+        toggleApproveConfirmation(state, action: PayloadAction<boolean>) {
+            state.approve = action.payload
+        },
+        toggleDeclineConfirmation(state, action: PayloadAction<boolean>) {
+            state.decline = action.payload
+        },
+        toggleShowDialog(state, action: PayloadAction<any>) {
+            state.ShowDialog = action.payload
         },
         toggleCreateSideBar(state, action: PayloadAction<boolean>) {
             state.createSideBarOpen = action.payload
@@ -71,10 +83,11 @@ const appSlice = createSlice({
 })
 
 export const {
-    toggleCreateSideBar,
+    toggleApproveConfirmation,
+    toggleDeclineConfirmation,
     toggleDeleteConfirmation,
     setSelectedId,
-    toggleEditSideBar,
+    toggleShowDialog,
     toggleViewSideBar,
 } = appSlice.actions
 export default appSlice.reducer

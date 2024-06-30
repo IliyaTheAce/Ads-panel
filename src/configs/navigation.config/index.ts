@@ -146,7 +146,17 @@ const navigationConfig: NavigationTree[] = [
         translateKey: 'nav.invoices',
         icon: 'invoices',
         type: NAV_ITEM_TYPE_ITEM,
-        authority: [],
+        authority: ['user'],
+        subMenu: [],
+    },
+    {
+        key: 'WithdrawRequestsNavItem',
+        path: `${APP_PREFIX_PATH}/withdraws`,
+        title: 'withdraws',
+        translateKey: 'nav.withdraws',
+        icon: 'withdraw',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: ['admin'],
         subMenu: [],
     },
     {

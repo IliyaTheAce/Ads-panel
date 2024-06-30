@@ -120,4 +120,12 @@ export const protectedRoutes: Routes = [
         component: lazy(() => import('@/views/Payment/Failed')),
         authority: [],
     },
+    {
+        key: 'WithdrawRequestsPage',
+        path: `${APP_PREFIX_PATH}/withdraws`,
+        component: lazy(
+            () => import('@/views/WithdrawRequests/WithdrawRequests')
+        ),
+        authority: ['admin'],
+    },
 ]

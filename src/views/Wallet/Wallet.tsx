@@ -2,8 +2,12 @@ import { AiOutlineReload } from 'react-icons/ai'
 import { AdaptableCard } from '@/components/shared'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useEffect, useState } from 'react'
-import { IInvoice, ITransaction } from '@/@types/data'
-import { GetInvoiceList, GetTransactions } from '@/services/WalletService'
+import { IInvoice, ITransaction, IWithdraw } from '@/@types/data'
+import {
+    GetInvoiceList,
+    GetTransactions,
+    GetWithdrawRequestsList,
+} from '@/services/WalletService'
 import { Button, Tabs } from '@/components/ui'
 import TransactionsTable from '@/views/Wallet/Components/TransactionsTable'
 import TabList from '@/components/ui/Tabs/TabList'
@@ -11,11 +15,15 @@ import TabNav from '@/components/ui/Tabs/TabNav'
 import TabContent from '@/components/ui/Tabs/TabContent'
 import WithdrawConfirmDialog from '@/views/Wallet/Components/WithdrawConfirmDialog'
 import InvoicesTable from '@/views/Wallet/Components/InvoicesTable'
+import WithdrawRequestsTable from '@/views/Wallet/Components/WithdrawRequestsTable'
+import ShowDialog from '@/views/WithdrawRequests/Components/ShowDialog'
 
 export default function Wallet() {
     const { textTheme } = useThemeClass()
     const [transactionsData, setTransactionsData] = useState<ITransaction[]>([])
     const [invoiceData, setInvoiceData] = useState<IInvoice[]>([])
+    const [withdrawsData, setWithdrawsData] = useState<IWithdraw[]>([])
+    const [walletAmount, setWalletAmount] = useState(0)
     const [loading, setLoading] = useState(true)
     const [isDialogOpen, setDialogOpen] = useState(false)
     const FetchData = () => {
@@ -24,6 +32,7 @@ export default function Wallet() {
         GetTransactions()
             .then((res) => {
                 setTransactionsData(res.data.data.transactions)
+                setWalletAmount(res.data.meta.user.wallet)
                 setLoading(false)
             })
             .catch((error) => console.log(error.message))
@@ -31,6 +40,12 @@ export default function Wallet() {
         GetInvoiceList()
             .then((res) => {
                 setInvoiceData(res.data.data.invoices)
+                setLoading(false)
+            })
+            .catch((error) => console.log(error.message))
+        GetWithdrawRequestsList()
+            .then((res) => {
+                setWithdrawsData(res.data.data.witdraws)
                 setLoading(false)
             })
             .catch((error) => console.log(error.message))
@@ -53,7 +68,7 @@ export default function Wallet() {
             </div>
 
             <div className="lg:flex items-center justify-between mb-4 font-base text-xl">
-                <h5 className="mb-4 lg:mb-0">موجودی کیف پول: 1800000</h5>
+                <h5 className="mb-4 lg:mb-0">موجودی کیف پول: {walletAmount}</h5>
                 <Button
                     variant={'solid'}
                     className={`flex items-center justify-center cursor-pointer  p-2 hover:${textTheme} text-sm transition-colors`}
@@ -70,7 +85,7 @@ export default function Wallet() {
                     <TabList>
                         <TabNav value="transactions">نراکنش های کیف پول</TabNav>
                         <TabNav value="invoices">صورت حساب ها</TabNav>
-                        <TabNav value="tab3">Contact</TabNav>
+                        <TabNav value="tab3">درخواست های برداشت</TabNav>
                     </TabList>
                     <div className="p-4">
                         <TabContent value="transactions">
@@ -88,11 +103,10 @@ export default function Wallet() {
                             />
                         </TabContent>
                         <TabContent value="tab3">
-                            <p>
-                                In C++ its harder to shoot yourself in the foot,
-                                but when you do, you blow off your whole leg.
-                                (Bjarne Stroustrup)
-                            </p>
+                            <WithdrawRequestsTable
+                                loading={loading}
+                                data={withdrawsData}
+                            />
                         </TabContent>
                     </div>
                 </Tabs>
@@ -106,6 +120,7 @@ export default function Wallet() {
                     setDialogOpen(false)
                 }}
             />
+            <ShowDialog title={'دلیل رد شدن درخواست'} />
         </AdaptableCard>
     )
 }
