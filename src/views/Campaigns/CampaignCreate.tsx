@@ -1,4 +1,4 @@
-import { Field, Form, Formik } from 'formik'
+import { Field, FieldProps, Form, Formik } from 'formik'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -12,9 +12,10 @@ import { DatePicker } from 'zaman'
 import classNames from 'classnames'
 import { useAppSelector } from '@/store'
 import { CostMode, SelectBoxType } from '@/@types/common'
+import CreatableSelect from 'react-select/creatable'
 
 interface valuesTypes {
-    categoryId: number
+    categoryId: SelectBoxType[]
     title: string
     type: string
     budget: number
@@ -24,19 +25,17 @@ interface valuesTypes {
     is_enabled: boolean
     is_escapable: boolean
     cost_mode: number
-    link: string
 }
 
 const initialValues: valuesTypes = {
     title: '',
     budget: 0,
     budget_daily: 0,
-    categoryId: 1,
+    categoryId: [],
     cost_mode: 1,
     end_time: '',
     is_enabled: false,
     is_escapable: false,
-    link: '',
     type: 'VIDEO',
     start_time: '',
 }
@@ -44,7 +43,6 @@ export default function CampaignCreate() {
     const { bgTheme } = useThemeClass()
     const validationSchema = Yup.object().shape({
         title: Yup.string().required('لطفا نام را وارد کنید'),
-        link: Yup.string().required('لطفا لینک را وارد کنید'),
         budget: Yup.number().required('لطفا بودجه را وارد کنید'),
         budget_daily: Yup.number().required('لطفا بودجه روزانه را وارد کنید'),
         start_time: Yup.string().required('لطفا تاریح شروع را وارد کنید'),
@@ -54,14 +52,39 @@ export default function CampaignCreate() {
 
     const nav = useNavigate()
 
+    const GetBudget = (values: {
+        end_time: string
+        start_time: string
+        budget_daily: number
+    }) => {
+        let days = new Date(values.end_time).getTime()
+        days -= new Date(values.start_time).getTime()
+        if (isNaN(days)) {
+            return `لطفا تاریخ شروع و پایان را مشخص کنید.`
+        }
+        return `هزینه کل: ${
+            (days / (1000 * 60 * 60 * 24)) * values.budget_daily
+        } تومان`
+
+        // (
+        //   values.budget_daily
+        // ).toLocaleString('fa')
+    }
+
     return (
         <AdaptableCard className="h-full" bodyClass="h-full">
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
                 onSubmit={(values, helpers) => {
+                    const categories: number[] = []
+                    values.categoryId.map((item) => {
+                        categories.push(item.value)
+                    })
+
                     ApiCreateCampaign({
                         ...values,
+                        categories,
                         is_enabled: values.is_enabled ? 1 : 0,
                         is_escapable: values.is_escapable ? 1 : 0,
                     })
@@ -73,13 +96,16 @@ export default function CampaignCreate() {
                                         type="success"
                                         duration={2500}
                                     >
-                                        دسته بندی با موفقیت ایجاد شد.
+                                        کمپین با موفقیت ایجاد شد.
                                     </Notification>,
                                     {
                                         placement: 'top-end',
                                     }
                                 )
-                                nav('/app/campaigns')
+                                nav(
+                                    `/app/invoices/preview/${response.data.data.campaign.uid}`
+                                )
+                                // nav('/app/campaigns')
                             } else {
                                 helpers.setErrors({
                                     title: response.data.message,
@@ -117,31 +143,6 @@ export default function CampaignCreate() {
                                 </FormItem>
 
                                 <FormItem
-                                    label="دسته بندی"
-                                    invalid={
-                                        (errors.categoryId &&
-                                            touched.categoryId) as boolean
-                                    }
-                                    errorMessage={errors.categoryId}
-                                    className={'shrink-0  min-w-[300px]'}
-                                >
-                                    <Select<SelectBoxType>
-                                        value={categories.filter(
-                                            (color) =>
-                                                color.value ===
-                                                values.categoryId
-                                        )}
-                                        className={'min-w-[200px]'}
-                                        options={categories}
-                                        onChange={(opt) =>
-                                            setFieldValue(
-                                                'categoryId',
-                                                opt?.value
-                                            )
-                                        }
-                                    />
-                                </FormItem>
-                                <FormItem
                                     label="مدل هزینه"
                                     invalid={
                                         (errors.cost_mode &&
@@ -166,25 +167,38 @@ export default function CampaignCreate() {
                                     />
                                 </FormItem>
                             </FormContainer>
+                            <FormItem
+                                label="دسته بندی"
+                                invalid={
+                                    (errors.categoryId &&
+                                        touched.categoryId) as unknown as boolean
+                                }
+                                errorMessage={errors.categoryId as string}
+                                className={'shrink-0 px-3'}
+                            >
+                                <Field name={'categoryId'}>
+                                    {({ field, form }: FieldProps) => (
+                                        <Select
+                                            placeholder={'انتخاب کنید...'}
+                                            isMulti
+                                            componentAs={CreatableSelect}
+                                            form={form}
+                                            field={field}
+                                            value={values.categoryId}
+                                            options={categories}
+                                            onChange={(options) => {
+                                                form.setFieldValue(
+                                                    field.name,
+                                                    options
+                                                )
+                                            }}
+                                        />
+                                    )}
+                                </Field>
+                            </FormItem>
                         </Card>
                         <Card title={'مالی'} header={'مالی'} className={'mt-5'}>
                             <FormContainer layout={'inline'} size={'md'}>
-                                <FormItem
-                                    label="بودجه"
-                                    invalid={
-                                        (errors.budget &&
-                                            touched.budget) as boolean
-                                    }
-                                    errorMessage={errors.budget}
-                                    className={'shrink-0'}
-                                >
-                                    <Field
-                                        type="number"
-                                        name="budget"
-                                        placeholder="بودجه"
-                                        component={Input}
-                                    />
-                                </FormItem>
                                 <FormItem
                                     label="بودجه روزانه"
                                     invalid={
@@ -202,6 +216,9 @@ export default function CampaignCreate() {
                                     />
                                 </FormItem>
                             </FormContainer>
+                            <h5 className={'text-sm font-light text-gray-500'}>
+                                {GetBudget(values)}
+                            </h5>
                         </Card>
                         <Card
                             title={'زمان بندی'}
@@ -269,22 +286,6 @@ export default function CampaignCreate() {
                             className={'mt-5'}
                         >
                             <FormContainer layout={'horizontal'} size={'md'}>
-                                <FormItem
-                                    label="لینک"
-                                    invalid={
-                                        (errors.link && touched.link) as boolean
-                                    }
-                                    errorMessage={errors.link}
-                                    className={'shrink-0 '}
-                                >
-                                    <Field
-                                        type="text"
-                                        autoComplete="true"
-                                        name="link"
-                                        placeholder="لینک"
-                                        component={Input}
-                                    />
-                                </FormItem>
                                 <FormItem
                                     label="قابل رد کردن"
                                     invalid={

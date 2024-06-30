@@ -5,7 +5,7 @@ import { APP_PREFIX_PATH } from '@/constants/route.constant'
 
 export const publicRoutes: Routes = [...authRoute]
 
-export const protectedRoutes = [
+export const protectedRoutes: Routes = [
     {
         key: 'home',
         path: `${APP_PREFIX_PATH}`,
@@ -88,6 +88,24 @@ export const protectedRoutes = [
         key: 'ProfilePage',
         path: `${APP_PREFIX_PATH}/profile`,
         component: lazy(() => import('@/views/Profile/')),
+        authority: [],
+    },
+    {
+        key: 'InvoicesPage',
+        path: `${APP_PREFIX_PATH}/invoices`,
+        component: lazy(() => import('@/views/Wallet/')),
+        authority: [],
+    },
+    {
+        key: 'InvoicePreviewPage',
+        path: `${APP_PREFIX_PATH}/invoices/preview/:id`,
+        component: lazy(() => import('@/views/Wallet/InvoicePreview')),
+        authority: [],
+    },
+    {
+        key: 'SuccessfulPaymentPage',
+        path: `${APP_PREFIX_PATH}/payment/successful/:slug`,
+        component: lazy(() => import('@/views/Payment/Successful')),
         authority: [],
     },
 ]

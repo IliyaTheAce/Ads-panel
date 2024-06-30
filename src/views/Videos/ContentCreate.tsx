@@ -18,6 +18,8 @@ interface valuesTypes {
     file: File | undefined
     cuid: SelectBoxType
     url: string
+    button_title: string
+    invitation_text: string
 }
 
 const initialValues: valuesTypes = {
@@ -25,6 +27,8 @@ const initialValues: valuesTypes = {
     cuid: { value: '', label: '' },
     file: undefined,
     url: '',
+    button_title: '',
+    invitation_text: '',
 }
 
 export type SelectBoxType = {
@@ -67,6 +71,8 @@ export default function ContentCreate() {
                     formData.append('file', values.file)
                     formData.append('title', values.title)
                     formData.append('cuid', values.cuid.value)
+                    formData.append('invitation_text', values.invitation_text)
+                    formData.append('button_title', values.button_title)
                     formData.append('url', values.url)
 
                     ApiCreateContent(formData)
@@ -132,6 +138,40 @@ export default function ContentCreate() {
                                         autoComplete="true"
                                         name="url"
                                         placeholder="آدرس لندینگ پیج"
+                                        component={Input}
+                                    />
+                                </FormItem>{' '}
+                                <FormItem
+                                    label="عنوان دکمه"
+                                    invalid={
+                                        (errors.button_title &&
+                                            touched.button_title) as boolean
+                                    }
+                                    errorMessage={errors.button_title}
+                                    className={'shrink-0'}
+                                >
+                                    <Field
+                                        type="text"
+                                        autoComplete="true"
+                                        name="button_title"
+                                        placeholder="عنوان دکمه"
+                                        component={Input}
+                                    />
+                                </FormItem>{' '}
+                                <FormItem
+                                    label="جمله دعوت"
+                                    invalid={
+                                        (errors.invitation_text &&
+                                            touched.invitation_text) as boolean
+                                    }
+                                    errorMessage={errors.invitation_text}
+                                    className={'shrink-0'}
+                                >
+                                    <Field
+                                        type="text"
+                                        autoComplete="true"
+                                        name="invitation_text"
+                                        placeholder="جمله دعوت"
                                         component={Input}
                                     />
                                 </FormItem>

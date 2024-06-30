@@ -1,4 +1,4 @@
-import { Field, Form, Formik } from 'formik'
+import { Field, FieldProps, Form, Formik } from 'formik'
 import { FormContainer, FormItem } from '@/components/ui/Form'
 import Input from '@/components/ui/Input'
 import Button from '@/components/ui/Button'
@@ -13,9 +13,10 @@ import { useNavigate, useParams } from 'react-router-dom'
 import classNames from 'classnames'
 import { useAppSelector } from '@/store'
 import { CostMode, SelectBoxType } from '@/@types/common'
+import CreatableSelect from 'react-select/creatable'
 
 interface valuesTypes {
-    categoryId: number
+    categories: SelectBoxType[]
     title: string
     type: string
     budget: number
@@ -33,7 +34,7 @@ export default function CampaignCreate() {
         title: '',
         budget: 0,
         budget_daily: 0,
-        categoryId: 0,
+        categories: [],
         cost_mode: 1,
         end_time: '',
         is_enabled: false,
@@ -59,15 +60,13 @@ export default function CampaignCreate() {
         if (!id) return
         GetCampaign(id).then((response) => {
             const camp = response.data.data.campaign
-            console.log({
-                ...camp,
-                categoryId: camp.category.id,
-                is_enabled: camp.is_enabled === 1,
-                is_escapable: camp.is_escapable === 1,
+            const categories: SelectBoxType[] = []
+            camp.categories.map((item) => {
+                categories.push({ value: item.id, label: item.name })
             })
             setInitialValues({
                 ...camp,
-                categoryId: camp.category.id,
+                categories,
                 is_enabled: camp.is_enabled === 1,
                 is_escapable: camp.is_escapable === 1,
             })
@@ -85,8 +84,14 @@ export default function CampaignCreate() {
                     validationSchema={validationSchema}
                     onSubmit={(values, helpers) => {
                         if (!id) return
+                        const categories: number[] = []
+                        values.categories.map((item) => {
+                            categories.push(item.value)
+                        })
+                        //TODO: There are errors in response
                         ApiEditCampaign(id, {
                             ...values,
+                            categories,
                             is_enabled: values.is_enabled ? 1 : 0,
                             is_escapable: values.is_escapable ? 1 : 0,
                         })
@@ -149,31 +154,7 @@ export default function CampaignCreate() {
                                             component={Input}
                                         />
                                     </FormItem>
-                                    <FormItem
-                                        label="دسته بندی"
-                                        invalid={
-                                            (errors.categoryId &&
-                                                touched.categoryId) as boolean
-                                        }
-                                        errorMessage={errors.categoryId}
-                                        className={'shrink-0'}
-                                    >
-                                        <Select<SelectBoxType>
-                                            value={categories.filter(
-                                                (color) =>
-                                                    color.value ===
-                                                    values.categoryId
-                                            )}
-                                            className={'min-w-[200px]'}
-                                            options={categories}
-                                            onChange={(opt) =>
-                                                setFieldValue(
-                                                    'categoryId',
-                                                    opt?.value
-                                                )
-                                            }
-                                        />
-                                    </FormItem>
+
                                     <FormItem
                                         label="مدل هزینه"
                                         invalid={
@@ -200,6 +181,36 @@ export default function CampaignCreate() {
                                         />
                                     </FormItem>
                                 </FormContainer>
+                                <FormItem
+                                    label="دسته بندی"
+                                    invalid={
+                                        (errors.categories &&
+                                            touched.categories) as unknown as boolean
+                                    }
+                                    errorMessage={errors.categories as string}
+                                    className={'shrink-0'}
+                                >
+                                    <Field name={'categories'}>
+                                        {({ field, form }: FieldProps) => (
+                                            <Select
+                                                placeholder={'انتخاب کنید...'}
+                                                isMulti
+                                                componentAs={CreatableSelect}
+                                                form={form}
+                                                field={field}
+                                                value={values.categories}
+                                                className={'min-w-[200px]'}
+                                                options={categories}
+                                                onChange={(options) => {
+                                                    form.setFieldValue(
+                                                        field.name,
+                                                        options
+                                                    )
+                                                }}
+                                            />
+                                        )}
+                                    </Field>
+                                </FormItem>
                             </Card>
                             <Card
                                 title={'مالی'}

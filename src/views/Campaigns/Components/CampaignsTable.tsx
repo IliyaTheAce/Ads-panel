@@ -9,6 +9,7 @@ import appConfig from '@/configs/app.config'
 import { ICampaign } from '@/@types/data'
 import { useNavigate } from 'react-router-dom'
 import { APP_PREFIX_PATH } from '@/constants/route.constant'
+import { Tag } from '@/components/ui'
 
 const CampaignsTable = ({
     loading,
@@ -41,30 +42,67 @@ const CampaignsTable = ({
                 accessorKey: 'createdAt',
                 enableSorting: false,
                 cell: ({ row }) => {
-                    return row.original.createdAt.split(' ')[0]
+                    return row.original.createdAt
+                        .split(' ')[0]
+                        .replaceAll('-', '/')
                 },
             },
             {
                 header: 'دسته بندی',
-                accessorKey: 'category',
+                accessorKey: 'categories',
                 enableSorting: false,
                 cell: (props) => {
-                    return props.row.original.category.name
+                    return props.row.original.categories.map(
+                        (item) => item.name + ','
+                    )
                 },
             },
             {
-                header: 'تایپ',
-                accessorKey: 'type',
+                header: 'وضعیت تایید کمپین',
+                accessorKey: 'approved',
                 enableSorting: false,
+                cell: ({ row }) => {
+                    return row.original.approved === 1 ? (
+                        <Tag prefix prefixClass="bg-emerald-500">
+                            تایید شده
+                        </Tag>
+                    ) : (
+                        <Tag prefix prefixClass="bg-yellow-500">
+                            در انتظار تایید
+                        </Tag>
+                    )
+                },
+            },
+            {
+                header: 'وضعیت تایید محتوا',
+                accessorKey: 'has_approved_content',
+                enableSorting: false,
+                cell: ({ row }) => {
+                    return row.original.has_approved_content === 1 ? (
+                        <Tag prefix prefixClass="bg-emerald-500">
+                            تایید شده
+                        </Tag>
+                    ) : (
+                        <Tag prefix prefixClass="bg-yellow-500">
+                            در انتظار تایید
+                        </Tag>
+                    )
+                },
             },
             {
                 header: 'وضعیت',
                 accessorKey: 'is_enabled',
                 enableSorting: false,
                 cell: (props) => {
-                    return props.row.original.is_enabled === 1
-                        ? 'فعال'
-                        : 'غیر فعال'
+                    return props.row.original.is_enabled === 1 ? (
+                        <Tag prefix prefixClass="bg-emerald-500">
+                            فعال{' '}
+                        </Tag>
+                    ) : (
+                        <Tag prefix prefixClass="bg-rose-500">
+                            غیر فعال{' '}
+                        </Tag>
+                    )
                 },
             },
             {

@@ -8,7 +8,10 @@ interface ContentsListResponse {
     }
 }
 
-export async function GetContentsList(params: { keyword?: string }) {
+export async function GetContentsList(params: {
+    category_id?: number
+    approved?: number
+}) {
     return ApiService.fetchData<ContentsListResponse>({
         url: '/contents',
         method: 'get',

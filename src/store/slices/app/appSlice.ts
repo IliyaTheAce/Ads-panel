@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { SLICE_BASE_NAME } from './constants'
 import { GetCommonData } from '@/services/CommonServices'
+import { SelectBoxType } from '@/@types/common'
 
 export type appState = {
     deleteConfirmation: boolean
@@ -9,10 +10,7 @@ export type appState = {
     viewSideBarOpen: boolean
     createSideBarOpen: boolean
     commonData: {
-        categories: {
-            label: string
-            value: number
-        }[]
+        categories: SelectBoxType[]
     }
 }
 

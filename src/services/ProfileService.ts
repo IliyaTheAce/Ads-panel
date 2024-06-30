@@ -5,6 +5,11 @@ interface GetProfileResponse {
     result: boolean
     data: {
         user: IUser
+        bank: {
+            bank_name: string
+            card_number: string
+            shaba: string
+        }
     }
 }
 interface UpdateProfileResponse {
@@ -25,6 +30,9 @@ export async function UpdateProfile({
         password: string
         password_confirmation: string
         username: string
+        bank_name: string
+        card_number: string
+        shaba: string
     }
 }) {
     return ApiService.fetchData<UpdateProfileResponse>({

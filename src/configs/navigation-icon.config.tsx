@@ -1,6 +1,7 @@
 import { HiOutlineHome } from 'react-icons/hi'
 import {
     AiOutlineUser,
+    BiCoin,
     BiVideo,
     FiUsers,
     MdOutlineCampaign,
@@ -16,6 +17,7 @@ const navigationIcon: NavigationIcons = {
     video: <BiVideo />,
     users: <FiUsers />,
     profile: <AiOutlineUser />,
+    invoices: <BiCoin />,
 }
 
 export default navigationIcon

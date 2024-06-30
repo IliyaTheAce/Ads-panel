@@ -6,6 +6,7 @@ import { useAppDispatch } from '@/store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
 import { setSelectedId, toggleDeleteConfirmation } from '@/store/slices/app'
 import { IContent } from '@/@types/data'
+import { Tag } from '@/components/ui'
 
 const VideosTable = ({
     loading,
@@ -35,6 +36,22 @@ const VideosTable = ({
                 header: 'فرمت فایل',
                 accessorKey: 'format',
                 enableSorting: false,
+            },
+            {
+                header: 'وضعیت تایید',
+                accessorKey: 'approved',
+                enableSorting: false,
+                cell: (props) => {
+                    return props.row.original.approved === 1 ? (
+                        <Tag prefix prefixClass="bg-emerald-500">
+                            تایید شده
+                        </Tag>
+                    ) : (
+                        <Tag prefix prefixClass="bg-yellow-500">
+                            در انتظار تایید
+                        </Tag>
+                    )
+                },
             },
             {
                 header: 'تنظیمات',

@@ -7,10 +7,13 @@ export interface ICampaign {
     is_enabled: number
     is_escapable: number
     link: string
-    category: {
+    approved: number
+    has_approved_content: number
+    approved_str: string
+    categories: {
         id: number
         name: string
-    }
+    }[]
     createdAt: string
     updatedAt: string
     cost_mode: number
@@ -45,6 +48,8 @@ export interface IContent {
     format: string
     title: string
     file: string
+    approved_str: string
+    approved: number
     resource: string
 }
 export interface IUser {
@@ -55,4 +60,11 @@ export interface IUser {
     email: string
     mobile: string
     role: string
+}
+
+export interface ITransaction {
+    date: string
+    time: string
+    change: number
+    balance: number
 }

@@ -17,6 +17,9 @@ type SignUpFormSchema = {
     password: string
     password_confirmation: string
     username: string
+    shaba: string
+    card_number: string
+    bank_name: string
 }
 const phoneRegex =
     /(0|\+98)?([ ]|-|[()]){0,2}9[1|2|3|4]([ ]|-|[()]){0,2}(?:[0-9]([ ]|-|[()]){0,2}){8}/gi
@@ -45,12 +48,16 @@ export default function UserCreate() {
         email: '',
         username: '',
         mobile: '',
+        shaba: '',
+        bank_name: '',
+        card_number: '',
     })
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         GetProfile().then((response) => {
             setInitialValues({
                 ...response.data.data.user,
+                ...response.data.data.bank,
                 password: '',
                 password_confirmation: '',
             })
@@ -71,6 +78,7 @@ export default function UserCreate() {
                                 GetProfile().then((response) => {
                                     setInitialValues({
                                         ...response.data.data.user,
+                                        ...response.data.data.bank,
                                         password: '',
                                         password_confirmation: '',
                                     })
@@ -199,6 +207,47 @@ export default function UserCreate() {
                                         name="password_confirmation"
                                         placeholder="تایید رمز عبور"
                                         component={PasswordInput}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="نام بانک"
+                                    invalid={
+                                        errors.bank_name && touched.bank_name
+                                    }
+                                    errorMessage={errors.bank_name}
+                                >
+                                    <Field
+                                        autoComplete="off"
+                                        name="bank_name"
+                                        placeholder="نام بانک"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="شماره شبا"
+                                    invalid={errors.shaba && touched.shaba}
+                                    errorMessage={errors.shaba}
+                                >
+                                    <Field
+                                        autoComplete="off"
+                                        name="shaba"
+                                        placeholder="شماره شبا"
+                                        component={Input}
+                                    />
+                                </FormItem>
+                                <FormItem
+                                    label="شماره کارت"
+                                    invalid={
+                                        errors.card_number &&
+                                        touched.card_number
+                                    }
+                                    errorMessage={errors.card_number}
+                                >
+                                    <Field
+                                        autoComplete="off"
+                                        name="card_number"
+                                        placeholder="شماره کارت"
+                                        component={Input}
                                     />
                                 </FormItem>
                                 <Button

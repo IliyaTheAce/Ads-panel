@@ -6,6 +6,7 @@ import useThemeClass from '@/utils/hooks/useThemeClass'
 import { useParams } from 'react-router-dom'
 import {
     BiCategory,
+    BiCheck,
     BiCoin,
     BiCoinStack,
     BiVideo,
@@ -88,6 +89,21 @@ const CampaignView = () => {
                             }
                         />
                         <InformationSession
+                            icon={<BiCheck />}
+                            title={'وضعیت تایید'}
+                            content={
+                                campaignsQuery.data?.approved ? (
+                                    <Tag prefix prefixClass="bg-emerald-500">
+                                        تایید شده
+                                    </Tag>
+                                ) : (
+                                    <Tag prefix prefixClass="bg-yellow-500">
+                                        در انتظار تایید
+                                    </Tag>
+                                )
+                            }
+                        />
+                        <InformationSession
                             icon={<SlCalender />}
                             title={'تاریخ شروع'}
                             content={campaignsQuery.data?.start_time}
@@ -114,7 +130,9 @@ const CampaignView = () => {
                         <InformationSession
                             icon={<BiCategory />}
                             title={'دسته بندی'}
-                            content={campaignsQuery.data?.category.name}
+                            content={campaignsQuery.data?.categories.map(
+                                (item) => item.name + ','
+                            )}
                         />
                         <InformationSession
                             icon={<BsConeStriped />}

@@ -23,9 +23,21 @@ export type SelectBoxType = {
 }
 
 export const CostMode: SelectBoxType[] = [
-    { label: 'پخش یک چهارم', value: 1 },
-    { label: 'پخش نیم', value: 2 },
-    { label: 'پخش سه چهارم', value: 3 },
-    { label: 'پخش کامل', value: 4 },
-    { label: 'کلیک', value: 5 },
+    { label: 'بازدید', value: 2 },
+    { label: 'کلیک', value: 1 },
+]
+
+export const ApprovedModes: SelectBoxType[] = [
+    {
+        label: 'همه',
+        value: -1,
+    },
+    {
+        label: 'تایید نشده',
+        value: 0,
+    },
+    {
+        label: 'تایید شده',
+        value: 1,
+    },
 ]

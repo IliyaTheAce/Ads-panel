@@ -1,33 +1,33 @@
+import type { ChangeEvent, ForwardedRef } from 'react'
 import {
     forwardRef,
+    useEffect,
+    useImperativeHandle,
     useMemo,
     useRef,
-    useEffect,
     useState,
-    useImperativeHandle,
 } from 'react'
 import classNames from 'classnames'
 import Table from '@/components/ui/Table'
 import Pagination from '@/components/ui/Pagination'
 import Select from '@/components/ui/Select'
+import type { CheckboxProps } from '@/components/ui/Checkbox'
 import Checkbox from '@/components/ui/Checkbox'
 import TableRowSkeleton from './loaders/TableRowSkeleton'
 import Loading from './Loading'
 import {
-    useReactTable,
+    CellContext,
+    ColumnDef,
+    ColumnSort,
+    flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
-    flexRender,
-    ColumnDef,
-    ColumnSort,
     Row,
-    CellContext,
+    useReactTable,
 } from '@tanstack/react-table'
 import type { SkeletonProps } from '@/components/ui/Skeleton'
-import type { ForwardedRef, ChangeEvent } from 'react'
-import type { CheckboxProps } from '@/components/ui/Checkbox'
 
 export type OnSortParam = { order: 'asc' | 'desc' | ''; key: string | number }
 
@@ -122,7 +122,7 @@ function _DataTable<T>(
         pagingData = {
             total: 0,
             pageIndex: 1,
-            pageSize: 10,
+            pageSize: 100,
         },
     } = props
 
@@ -351,10 +351,10 @@ function _DataTable<T>(
 }
 
 const DataTable = forwardRef(_DataTable) as <T>(
-  props: DataTableProps<T> & {
-    ref?: ForwardedRef<DataTableResetHandle>
-  }
-) => ReturnType<typeof _DataTable>;
+    props: DataTableProps<T> & {
+        ref?: ForwardedRef<DataTableResetHandle>
+    }
+) => ReturnType<typeof _DataTable>
 
-export type { ColumnDef, Row, CellContext };
-export default DataTable;
+export type { ColumnDef, Row, CellContext }
+export default DataTable

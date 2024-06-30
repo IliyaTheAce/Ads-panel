@@ -120,6 +120,16 @@ const navigationConfig: NavigationTree[] = [
         subMenu: [],
     },
     {
+        key: 'InvoicesNavItem',
+        path: `${APP_PREFIX_PATH}/invoices`,
+        title: 'invoices',
+        translateKey: 'nav.invoices',
+        icon: 'invoices',
+        type: NAV_ITEM_TYPE_ITEM,
+        authority: [],
+        subMenu: [],
+    },
+    {
         key: 'ProfileNavItem',
         path: `${APP_PREFIX_PATH}/profile`,
         title: 'Profile',
@@ -133,9 +143,7 @@ const navigationConfig: NavigationTree[] = [
     //     key: 'collapseMenu',
     //     path: '',
     //     title: 'Collapse Menu',
-    //     translateKey: 'nav.collapseMenu.collapseMenu',
-    //     icon: 'collapseMenu',
-    //     type: NAV_ITEM_TYPE_COLLAPSE,
+    //     translateKey: 'nav.collapseMenu.collapseMenu', //     icon: 'collapseMenu', //     type: NAV_ITEM_TYPE_COLLAPSE,
     //     authority: [],
     //     subMenu: [
     //         {

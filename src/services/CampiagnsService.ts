@@ -11,6 +11,7 @@ interface CampaignsListResponse {
 export async function CampaignsList(params: {
     category_id?: number
     keyword?: string
+    approved?: number
 }) {
     return ApiService.fetchData<CampaignsListResponse>({
         url: '/campaigns',
@@ -73,7 +74,7 @@ interface CreateCampaignResponse {
 }
 
 type CreateCampaignRequest = {
-    categoryId: number
+    categories: number[]
     title: string
     type: string
     budget: number
@@ -83,7 +84,6 @@ type CreateCampaignRequest = {
     is_enabled: number
     is_escapable: number
     cost_mode: number
-    link: string
 }
 
 export async function ApiCreateCampaign(data: CreateCampaignRequest) {
@@ -99,5 +99,33 @@ export async function ApiEditCampaign(id: string, data: CreateCampaignRequest) {
         url: `/campaigns/${id}`,
         method: 'put',
         data,
+    })
+}
+
+interface InvoicePreviewResponse {
+    result: boolean
+    data: {
+        campaign: {
+            uid: string
+            title: string
+            amount: number
+            tax_amount: number
+            total_amount: number
+            start_time: string
+            end_time: string
+        }
+    }
+}
+
+export async function ApiInvoicePreview(id: string) {
+    return ApiService.fetchData<InvoicePreviewResponse>({
+        url: `/campaigns/${id}/invoice/preview`,
+        method: 'get',
+    })
+}
+export async function ApiInvoiceStore(id: string) {
+    return ApiService.fetchData<InvoicePreviewResponse>({
+        url: `/campaigns/${id}/invoice/store`,
+        method: 'get',
     })
 }
